@@ -1243,21 +1243,31 @@ body {
             Invalid Host Username or Password.
           </div>
 
+          <div id="hostSetupHint" style="display: none; background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; margin-bottom: 1.15rem; line-height: 1.4;">
+            ✨ <strong>First-Time Setup:</strong> Enter your preferred Host Username / ID and Password to set up your administrator account.
+          </div>
+
           <form id="hostLoginForm" onsubmit="handleHostLoginSubmit(event)">
             <div class="form-group" style="margin-bottom: 1.15rem;">
               <label class="form-label" for="hostUserInput" style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">Host Username / ID *</label>
-              <input type="text" id="hostUserInput" class="form-control" placeholder="Enter 'admin'" value="admin" required autocomplete="username">
+              <input type="text" id="hostUserInput" class="form-control" placeholder="Enter Host Username / ID" required autocomplete="username">
             </div>
 
             <div class="form-group" style="margin-bottom: 1.15rem;">
               <label class="form-label" for="hostPassInput" style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">Host Password *</label>
-              <input type="password" id="hostPassInput" class="form-control" placeholder="Enter 'admin1'" value="admin1" required autocomplete="current-password">
+              <input type="password" id="hostPassInput" class="form-control" placeholder="Enter Host Password" required autocomplete="current-password">
             </div>
 
-            <button type="submit" class="btn-action-primary" style="width: 100%; padding: 0.9rem; font-size: 1.05rem; font-weight: 700; border-radius: 8px; background: #0f172a; color: white; border: none; cursor: pointer; margin-bottom: 1rem;">
+            <button type="submit" id="btnHostLoginSubmit" class="btn-action-primary" style="width: 100%; padding: 0.9rem; font-size: 1.05rem; font-weight: 700; border-radius: 8px; background: #0f172a; color: white; border: none; cursor: pointer; margin-bottom: 0.75rem;">
               🔑 Login to Host Dashboard
             </button>
           </form>
+
+          <div id="hostResetLinkContainer" style="text-align: center; margin-bottom: 1rem; display: none;">
+            <button type="button" onclick="resetHostCredentialsPrompt()" style="background: none; border: none; color: #64748b; font-size: 0.78rem; text-decoration: underline; cursor: pointer;">
+              Forgot / Reset Host Credentials?
+            </button>
+          </div>
 
           <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.8rem; color: #475569; margin-bottom: 1rem;">
             <strong>🛡️ Host Privileges:</strong>
@@ -1495,6 +1505,9 @@ body {
         </button>
         <button class="btn btn-success" onclick="exportSubmissionsCsv()" style="font-size: 0.85rem; padding: 0.4rem 0.8rem;">
           📥 Export CSV
+        </button>
+        <button class="btn btn-secondary" onclick="openChangeHostPasswordModal()" style="font-size: 0.85rem; padding: 0.4rem 0.8rem; color: #1e3a8a; border-color: #bfdbfe;">
+          🔑 Change Host ID/Pass
         </button>
         <button class="btn btn-secondary" onclick="clearHostAllData()" style="font-size: 0.85rem; padding: 0.4rem 0.8rem; color: #b91c1c; border-color: #fca5a5;">
           🗑️ Clear Data
@@ -2196,7 +2209,8 @@ body {
       QUESTIONS: 'nta_cloud_questions',
       SUBMISSIONS: 'nta_cloud_submissions',
       ACTIVE_CANDIDATES: 'nta_cloud_active_cands',
-      HOST_AUTH: 'nta_cloud_host_auth'
+      HOST_AUTH: 'nta_cloud_host_auth',
+      HOST_CREDS: 'nta_cloud_host_creds'
     };
 
     function loadFromStorage(key, defaultVal) {
@@ -2334,9 +2348,12 @@ body {
       document.getElementById('studentSection').style.display = isStudent ? 'block' : 'none';
       document.getElementById('hostLoginSection').style.display = isStudent ? 'none' : 'block';
 
-      if (!isStudent && isHostAuthenticated) {
-        // Direct entry if already logged in as host
-        openHostDashboard();
+      if (!isStudent) {
+        refreshHostLoginUI();
+        if (isHostAuthenticated) {
+          // Direct entry if already logged in as host
+          openHostDashboard();
+        }
       }
     }
 
@@ -2524,15 +2541,100 @@ body {
       const pass = document.getElementById('hostPassInput').value.trim();
       const errBox = document.getElementById('hostLoginErrorMsg');
 
-      if (user === 'admin' && pass === 'admin1') {
+      if (!user || !pass) {
+        errBox.textContent = 'Please enter both Host Username / ID and Password.';
+        errBox.style.display = 'block';
+        return;
+      }
+
+      let hostCreds = loadFromStorage(STORAGE_KEYS.HOST_CREDS, null);
+
+      // First-time setup: The host enters and defines their own ID and Password!
+      if (!hostCreds) {
+        hostCreds = { username: user, password: pass };
+        saveToStorage(STORAGE_KEYS.HOST_CREDS, hostCreds);
         isHostAuthenticated = true;
         saveToStorage(STORAGE_KEYS.HOST_AUTH, true);
         errBox.style.display = 'none';
+        showToast(`Host account created with ID: ${user}`);
+        openHostDashboard();
+        return;
+      }
+
+      // Subsequent login: Validate against host's configured credentials
+      if (user === hostCreds.username && pass === hostCreds.password) {
+        isHostAuthenticated = true;
+        saveToStorage(STORAGE_KEYS.HOST_AUTH, true);
+        errBox.style.display = 'none';
+        showToast(`Welcome back, ${user}!`);
         openHostDashboard();
       } else {
-        errBox.textContent = 'Invalid Host Username or Password. (Default: admin / admin1)';
+        errBox.textContent = 'Invalid Host Username or Password. Please try again.';
         errBox.style.display = 'block';
       }
+    }
+
+    function refreshHostLoginUI() {
+      const hintEl = document.getElementById('hostSetupHint');
+      const submitBtn = document.getElementById('btnHostLoginSubmit');
+      const resetContainer = document.getElementById('hostResetLinkContainer');
+      const hostCreds = loadFromStorage(STORAGE_KEYS.HOST_CREDS, null);
+
+      if (!hostCreds) {
+        if (hintEl) {
+          hintEl.innerHTML = '✨ <strong>First-Time Setup:</strong> Enter your desired Host Username / ID and Password to initialize your administrator account.';
+          hintEl.style.display = 'block';
+        }
+        if (submitBtn) {
+          submitBtn.innerHTML = '✨ Set Credentials & Enter Dashboard';
+        }
+        if (resetContainer) resetContainer.style.display = 'none';
+      } else {
+        if (hintEl) {
+          hintEl.innerHTML = '🔒 Enter your registered Host ID and Password to access the administration panel.';
+          hintEl.style.display = 'block';
+        }
+        if (submitBtn) {
+          submitBtn.innerHTML = '🔑 Login to Host Dashboard';
+        }
+        if (resetContainer) resetContainer.style.display = 'block';
+      }
+    }
+
+    function resetHostCredentialsPrompt() {
+      if (confirm('Resetting host credentials will clear your current Host ID and Password so you can set a new one. Do you want to proceed?')) {
+        localStorage.removeItem(STORAGE_KEYS.HOST_CREDS);
+        saveToStorage(STORAGE_KEYS.HOST_AUTH, false);
+        isHostAuthenticated = false;
+        document.getElementById('hostUserInput').value = '';
+        document.getElementById('hostPassInput').value = '';
+        const errBox = document.getElementById('hostLoginErrorMsg');
+        if (errBox) errBox.style.display = 'none';
+        refreshHostLoginUI();
+        showToast('Host credentials reset. You can now set a new ID and Password.');
+      }
+    }
+
+    function openChangeHostPasswordModal() {
+      const hostCreds = loadFromStorage(STORAGE_KEYS.HOST_CREDS, null) || { username: 'Host', password: '' };
+      const newUsername = prompt('Enter new Host Username / ID:', hostCreds.username);
+      if (newUsername === null) return;
+      const trimmedUser = newUsername.trim();
+      if (!trimmedUser) {
+        alert('Host Username / ID cannot be empty.');
+        return;
+      }
+
+      const newPassword = prompt('Enter new Host Password:');
+      if (newPassword === null) return;
+      const trimmedPass = newPassword.trim();
+      if (!trimmedPass) {
+        alert('Host Password cannot be empty.');
+        return;
+      }
+
+      saveToStorage(STORAGE_KEYS.HOST_CREDS, { username: trimmedUser, password: trimmedPass });
+      showToast(`Host credentials updated! Current ID: ${trimmedUser}`);
     }
 
     function openHostDashboard() {
@@ -3998,12 +4100,16 @@ body {
     window.exportSubmissionsCsv = exportSubmissionsCsv;
     window.clearHostAllData = clearHostAllData;
     window.logoutHostSession = logoutHostSession;
+    window.openChangeHostPasswordModal = openChangeHostPasswordModal;
+    window.resetHostCredentialsPrompt = resetHostCredentialsPrompt;
+    window.refreshHostLoginUI = refreshHostLoginUI;
 
     // -------------------------------------------------------------
     // Initial Page Boot
     // -------------------------------------------------------------
     document.addEventListener('DOMContentLoaded', () => {
       renderLandingExamCards();
+      refreshHostLoginUI();
 
       // Check URL params for direct host login or role e.g. #host or ?role=host
       const urlParams = new URLSearchParams(window.location.search);
