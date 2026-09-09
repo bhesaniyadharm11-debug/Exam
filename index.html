@@ -1173,6 +1173,143 @@ body {
       display: none;
       border-left: 4px solid #2563eb;
     }
+
+    /* Student Exam Select Grid & Cards */
+    .exam-select-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+      margin-bottom: 1.15rem;
+    }
+    @media (max-width: 640px) {
+      .exam-select-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .exam-radio-card {
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 1.15rem 1rem;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+      background: #f8fafc;
+      position: relative;
+      user-select: none;
+    }
+    .exam-radio-card:hover {
+      border-color: #94a3b8;
+      background: #f1f5f9;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+    .exam-radio-card.selected {
+      border-color: #2563eb;
+      background: #eff6ff;
+      box-shadow: 0 0 0 2px #2563eb, 0 8px 16px -4px rgba(37, 99, 235, 0.18);
+      transform: translateY(-2px);
+    }
+    .exam-radio-card.card-neet.selected {
+      border-color: #059669;
+      background: #ecfdf5;
+      box-shadow: 0 0 0 2px #059669, 0 8px 16px -4px rgba(5, 150, 105, 0.18);
+    }
+    .exam-radio-card.exam-card-closed {
+      opacity: 0.6;
+      background: #f1f5f9;
+      border-color: #e2e8f0;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+    .exam-radio-circle {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid #94a3b8;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .exam-radio-card.selected .exam-radio-circle {
+      border-color: #2563eb;
+      background: #2563eb;
+    }
+    .exam-radio-card.card-neet.selected .exam-radio-circle {
+      border-color: #059669;
+      background: #059669;
+    }
+    .exam-radio-circle::after {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ffffff;
+      display: none;
+    }
+    .exam-radio-card.selected .exam-radio-circle::after {
+      display: block;
+    }
+    .selected-exam-banner {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-left: 4px solid #2563eb;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.25rem;
+      font-size: 0.85rem;
+      color: #1e40af;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .selected-exam-banner.neet-active {
+      background: #ecfdf5;
+      border-color: #a7f3d0;
+      border-left-color: #059669;
+      color: #065f46;
+    }
+    .exam-quick-switch-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 0.85rem;
+    }
+    .exam-quick-switch-btn {
+      padding: 0.6rem 0.75rem;
+      border-radius: 8px;
+      border: 2px solid #e2e8f0;
+      background: #f8fafc;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 0.88rem;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+    .exam-quick-switch-btn:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+    .exam-quick-switch-btn.active.jee-active {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #1d4ed8;
+      box-shadow: 0 4px 8px rgba(37, 99, 235, 0.25);
+    }
+    .exam-quick-switch-btn.active.neet-active {
+      background: #059669;
+      color: #ffffff;
+      border-color: #047857;
+      box-shadow: 0 4px 8px rgba(5, 150, 105, 0.25);
+    }
   </style>
 </head>
 <body id="portalBody">
@@ -1230,9 +1367,38 @@ body {
 
         <!-- ================= STUDENT ENTRANCE SECTION ================= -->
         <div id="studentSection">
-          <label class="form-label" style="font-weight: 700; font-size: 0.85rem; color: #334155; margin-bottom: 0.35rem; display: block;">Select Examination Track</label>
-          <div class="exam-select-grid" id="landingExamSelectGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 0.85rem; margin-bottom: 1.25rem;">
+          <div style="margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+            <label class="form-label" style="margin: 0; font-weight: 800; font-size: 0.95rem; color: #0f172a;">
+              Choose Exam: JEE (Main) or NEET (UG) *
+            </label>
+            <span style="font-size: 0.75rem; color: #64748b; font-weight: 600;">Tap to select</span>
+          </div>
+
+          <!-- Quick Dual Switcher -->
+          <div class="exam-quick-switch-tabs">
+            <button type="button" class="exam-quick-switch-btn active jee-active" id="quickBtnJee" onclick="selectLandingExamCard('jee')">
+              ⚛️ JEE (Main) Engineering • 300M
+            </button>
+            <button type="button" class="exam-quick-switch-btn" id="quickBtnNeet" onclick="selectLandingExamCard('neet')">
+              🩺 NEET (UG) Medical • 720M
+            </button>
+          </div>
+
+          <div class="exam-select-grid" id="landingExamSelectGrid">
             <!-- Populated dynamically with Live / Closed indicators -->
+          </div>
+
+          <!-- Selected Exam Summary Banner -->
+          <div id="selectedExamSummaryBanner" class="selected-exam-banner">
+            <div>
+              <strong id="bannerExamTitle">⚛️ JEE (Main) Examination (Engineering Track)</strong>
+              <div id="bannerExamDetails" style="font-size: 0.75rem; margin-top: 0.2rem; opacity: 0.9;">
+                75 Questions • 300 Marks • Physics (25), Chemistry (25), Mathematics (25) • 180 Mins
+              </div>
+            </div>
+            <span style="font-size: 0.75rem; background: #ffffff; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 800;" id="bannerExamCodeBadge">
+              JEE • 300M
+            </span>
           </div>
 
           <form id="studentRegisterForm" onsubmit="handleStudentStartExam(event)">
@@ -2575,9 +2741,19 @@ Answer: A"></textarea>
           selectedLandingExamType = ex.exam_type;
         }
 
+        const isNeet = (ex.exam_type === 'neet' || ex.category === 'Medical');
+        const icon = ex.exam_type === 'jee' ? '⚛️' : (ex.exam_type === 'neet' ? '🩺' : '📝');
+        const breakdown = ex.exam_type === 'jee'
+          ? 'Physics (25) • Chemistry (25) • Mathematics (25) • 180 Mins'
+          : (ex.exam_type === 'neet'
+            ? 'Physics (45) • Chemistry (45) • Botany (45) • Zoology (45) • 200 Mins'
+            : `${ex.instructions ? ex.instructions.slice(0, 60) : 'Standard Paper'} • ${ex.duration_minutes} Mins`);
+
         const card = document.createElement('div');
-        card.className = `exam-radio-card ${isSelected ? 'selected' : ''} ${isClosed ? 'exam-card-closed' : ''}`;
+        card.className = `exam-radio-card ${isSelected ? 'selected' : ''} ${isNeet ? 'card-neet' : ''} ${isClosed ? 'exam-card-closed' : ''}`;
         card.id = `landing_card_${ex.exam_type}`;
+        card.setAttribute('data-title', ex.title);
+        card.setAttribute('data-marks', ex.total_marks);
         card.onclick = () => selectLandingExamCard(ex.exam_type, ex.is_active);
 
         let badgeHtml = '';
@@ -2590,20 +2766,34 @@ Answer: A"></textarea>
         }
 
         card.innerHTML = `
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem;">
-            <div style="font-weight: 800; font-size: 1.15rem; color: ${isClosed ? '#64748b' : '#1e3a8a'}; text-align: left;">
-              ${escapeHtml(ex.title)}
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.35rem;">
+            <div style="display: flex; align-items: center; gap: 0.45rem;">
+              <span style="font-size: 1.25rem;">${icon}</span>
+              <div>
+                <div style="font-weight: 800; font-size: 1.05rem; color: ${isClosed ? '#64748b' : '#1e3a8a'};">
+                  ${escapeHtml(ex.title)}
+                </div>
+                <span style="font-size: 0.7rem; font-weight: 700; color: ${isNeet ? '#059669' : '#2563eb'}; text-transform: uppercase;">
+                  ${escapeHtml(ex.category || 'General')} Track
+                </span>
+              </div>
             </div>
-            ${badgeHtml}
+            <div style="display: flex; align-items: center; gap: 0.4rem;">
+              ${badgeHtml}
+              <div class="exam-radio-circle"></div>
+            </div>
           </div>
-          <div style="font-size: 0.78rem; font-weight: 700; color: ${isClosed ? '#94a3b8' : '#64748b'}; margin-top: 0.35rem; text-align: left;">
-            Total: ${ex.total_marks} Marks ${isClosed ? '<span style="color: #dc2626; font-size: 0.72rem; font-weight: 800;">(Host Closed)</span>' : ''}
+
+          <div style="font-size: 0.8rem; font-weight: 700; color: ${isClosed ? '#94a3b8' : '#334155'}; margin-bottom: 0.25rem;">
+            ${ex.question_count} Questions • ${ex.total_marks} Marks Total ${isClosed ? '<span style="color: #dc2626; font-size: 0.72rem; font-weight: 800;">(Host Closed)</span>' : ''}
           </div>
-          <div style="font-size: 0.72rem; color: #94a3b8; text-align: left;">
-            ${ex.question_count} Questions • ${ex.duration_minutes} Mins
+
+          <div style="font-size: 0.72rem; color: #64748b; line-height: 1.4;">
+            ${escapeHtml(breakdown)}
           </div>
+
           ${ex.schedule_type === 'scheduled' && ex.start_time && !isClosed ? `
-            <div style="font-size: 0.68rem; color: #b45309; margin-top: 0.2rem; text-align: left;">
+            <div style="font-size: 0.68rem; color: #b45309; margin-top: 0.25rem;">
               Starts: ${escapeHtml(ex.start_time.replace('T', ' '))}
             </div>
           ` : ''}
@@ -2611,10 +2801,18 @@ Answer: A"></textarea>
 
         grid.appendChild(card);
       });
+
+      // Synchronize initial banner & button state
+      updateSelectedExamBanner(selectedLandingExamType);
     }
 
     function selectLandingExamCard(examType, isActive) {
-      if (!isActive) {
+      const ex = exams.find(x => x.exam_type === examType);
+      const isExamActive = (isActive !== undefined)
+        ? Boolean(isActive)
+        : (ex ? Boolean(ex.is_active) : true);
+
+      if (!isExamActive) {
         alert("This examination is currently CLOSED by the host. Candidates cannot attempt a closed exam.");
         return;
       }
@@ -2622,6 +2820,46 @@ Answer: A"></textarea>
       document.querySelectorAll('#landingExamSelectGrid .exam-radio-card').forEach(c => c.classList.remove('selected'));
       const card = document.getElementById(`landing_card_${examType}`);
       if (card) card.classList.add('selected');
+
+      updateSelectedExamBanner(examType);
+    }
+
+    function updateSelectedExamBanner(examType) {
+      const btnJee = document.getElementById("quickBtnJee");
+      const btnNeet = document.getElementById("quickBtnNeet");
+      if (btnJee && btnNeet) {
+        btnJee.className = `exam-quick-switch-btn ${examType === "jee" ? "active jee-active" : ""}`;
+        btnNeet.className = `exam-quick-switch-btn ${examType === "neet" ? "active neet-active" : ""}`;
+      }
+
+      const banner = document.getElementById("selectedExamSummaryBanner");
+      const bannerTitle = document.getElementById("bannerExamTitle");
+      const bannerDetails = document.getElementById("bannerExamDetails");
+      const bannerBadge = document.getElementById("bannerExamCodeBadge");
+      const launchBtn = document.getElementById("btnLaunchStudentExam");
+
+      if (examType === "jee") {
+        if (banner) banner.className = "selected-exam-banner";
+        if (bannerTitle) bannerTitle.textContent = "⚛️ JEE (Main) Examination (Engineering Track)";
+        if (bannerDetails) bannerDetails.textContent = "75 Questions • 300 Marks • Physics (25), Chemistry (25), Mathematics (25) • 180 Mins";
+        if (bannerBadge) bannerBadge.textContent = "JEE • 300M";
+        if (launchBtn) launchBtn.textContent = "🚀 Launch JEE (Main) Exam (300 Marks)";
+      } else if (examType === "neet") {
+        if (banner) banner.className = "selected-exam-banner neet-active";
+        if (bannerTitle) bannerTitle.textContent = "🩺 NEET (UG) Examination (Medical Track)";
+        if (bannerDetails) bannerDetails.textContent = "180 Questions • 720 Marks • Physics (45), Chemistry (45), Botany (45), Zoology (45) • 200 Mins";
+        if (bannerBadge) bannerBadge.textContent = "NEET • 720M";
+        if (launchBtn) launchBtn.textContent = "🚀 Launch NEET (UG) Exam (720 Marks)";
+      } else {
+        const ex = exams.find(x => x.exam_type === examType);
+        const title = ex ? ex.title : examType.toUpperCase();
+        const marks = ex ? ex.total_marks : "Paper";
+        if (banner) banner.className = "selected-exam-banner";
+        if (bannerTitle) bannerTitle.textContent = `📝 ${title}`;
+        if (bannerDetails) bannerDetails.textContent = `Examination Paper • ${marks} Marks Total`;
+        if (bannerBadge) bannerBadge.textContent = examType.toUpperCase();
+        if (launchBtn) launchBtn.textContent = `🚀 Launch ${title} (${marks}M)`;
+      }
     }
 
     function handleStudentStartExam(e) {
