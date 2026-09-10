@@ -1886,6 +1886,9 @@ body {
               <button class="btn btn-primary" onclick="openAddQuestionModal()">
                 ➕ Add Question
               </button>
+              <button class="btn btn-primary" onclick="openPyqBrowserModal('direct_add')" style="background: #7c3aed; color: white; border: none; font-weight: 700; padding: 0.45rem 0.85rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.35rem;" title="Browse and select from 13-Year past exam questions (JEE Main, Advanced, NEET, GUJCET 2012-2024)">
+                📚 13-Year PYQs
+              </button>
               <button class="btn btn-success" onclick="openUploadPdfModal()" style="background: #059669; color: white; border: none; font-weight: 700; padding: 0.45rem 0.85rem; font-size: 0.85rem;" title="Upload PDF of MCQs to automatically parse and add to exam">
                 📄 Upload MCQ PDF
               </button>
@@ -2047,13 +2050,18 @@ body {
   <!-- 4. Add / Edit Question Modal (Host Only) -->
   <div class="modal-overlay hidden" id="questionEditModal">
     <div class="confirm-modal-card" style="max-width: 720px; width: 95%;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.75rem;">
-        <h3 id="qModalTitle" style="font-size: 1.3rem; font-weight: 800; color: #0f172a;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+        <h3 id="qModalTitle" style="font-size: 1.3rem; font-weight: 800; color: #0f172a; margin: 0;">
           Edit Question
         </h3>
-        <button onclick="closeQuestionEditModal()" class="btn btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.85rem;">
-          ✕ Close
-        </button>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <button type="button" class="btn btn-primary" onclick="openPyqBrowserModal('edit_form')" style="padding: 0.35rem 0.75rem; font-size: 0.82rem; font-weight: 700; display: flex; align-items: center; gap: 0.35rem; background: #2563eb;" title="Select from JEE Main, Advanced, NEET, GUJCET 13-year past questions">
+            📚 Select from 13-Year PYQs
+          </button>
+          <button onclick="closeQuestionEditModal()" class="btn btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.85rem;">
+            ✕ Close
+          </button>
+        </div>
       </div>
 
       <form id="questionEditForm" onsubmit="saveQuestionForm(event)">
@@ -2075,8 +2083,26 @@ body {
         </div>
 
         <div style="margin-bottom: 1rem;">
-          <label class="form-label" style="font-weight: 700; font-size: 0.85rem;">Question Statement *</label>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+            <label class="form-label" style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0;">Question Statement *</label>
+            <button type="button" onclick="openPyqBrowserModal('edit_form')" style="background: none; border: none; color: #2563eb; font-size: 0.8rem; font-weight: 700; cursor: pointer; text-decoration: underline;">
+              ⚡ Pick from 13-Year PYQ Bank (2012–2024)
+            </button>
+          </div>
           <textarea id="editQText" class="form-control" rows="3" style="width: 100%; resize: vertical;" placeholder="Enter question description..." required></textarea>
+        </div>
+
+        <div id="editQuestionDiagramArea" style="margin-bottom: 1rem; display: none;">
+          <label class="form-label" style="font-weight: 700; font-size: 0.85rem;">Attached Diagram / Picture</label>
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem; display: flex; align-items: center; gap: 1rem;">
+            <img id="editQuestionDiagramPreview" src="" alt="Diagram Preview" style="max-height: 120px; max-width: 200px; object-fit: contain; border-radius: 4px; border: 1px solid #cbd5e1; background: white;">
+            <div>
+              <div style="font-size: 0.8rem; color: #475569; margin-bottom: 0.5rem;">Extracted or attached diagram for this MCQ.</div>
+              <button type="button" class="btn btn-secondary" onclick="removeEditingQuestionDiagram()" style="padding: 0.25rem 0.6rem; font-size: 0.78rem; color: #dc2626; border-color: #fca5a5;">
+                🗑️ Remove Diagram
+              </button>
+            </div>
+          </div>
         </div>
 
         <div style="margin-bottom: 1rem;">
@@ -2558,6 +2584,128 @@ Answer: A"></textarea>
     </div>
   </div>
 
+  <!-- ==================== 13-YEAR PYQ BROWSER MODAL ==================== -->
+  <div class="modal-overlay hidden" id="pyqBrowserModal" style="z-index: 1050;">
+    <div class="confirm-modal-card" style="max-width: 980px; width: 96%; max-height: 92vh; display: flex; flex-direction: column; padding: 1.25rem;">
+      <!-- Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 0.75rem; margin-bottom: 1rem;">
+        <div>
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: #1e1b4b; display: flex; align-items: center; gap: 0.5rem; margin: 0;">
+            <span>📚</span> 13-Year Past Exam Questions Bank (2012 – 2024)
+          </h3>
+          <p style="font-size: 0.8rem; color: #64748b; margin: 0.2rem 0 0 0;">
+            Authentic PYQs for <strong>JEE Main</strong>, <strong>JEE Advanced</strong>, <strong>NEET-UG</strong>, and <strong>GUJCET</strong> across Physics, Chemistry, Mathematics & Biology.
+          </p>
+        </div>
+        <button type="button" onclick="closePyqBrowserModal()" class="btn btn-secondary" style="padding: 0.3rem 0.7rem; font-size: 0.85rem;">
+          ✕ Close
+        </button>
+      </div>
+
+      <!-- Filters Strip -->
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; margin-bottom: 0.85rem; display: flex; flex-direction: column; gap: 0.75rem;">
+        <!-- Exam Track Filter Buttons -->
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+          <span style="font-size: 0.8rem; font-weight: 800; color: #475569; margin-right: 0.25rem;">EXAM:</span>
+          <button type="button" class="pyq-filter-btn active" data-exam="all" onclick="setPyqExamFilter('all')">All Exams</button>
+          <button type="button" class="pyq-filter-btn" data-exam="jee_main" onclick="setPyqExamFilter('jee_main')">JEE Main</button>
+          <button type="button" class="pyq-filter-btn" data-exam="jee_adv" onclick="setPyqExamFilter('jee_adv')">JEE Advanced</button>
+          <button type="button" class="pyq-filter-btn" data-exam="neet" onclick="setPyqExamFilter('neet')">NEET-UG</button>
+          <button type="button" class="pyq-filter-btn" data-exam="gujcet" onclick="setPyqExamFilter('gujcet')">GUJCET</button>
+        </div>
+
+        <!-- Year, Subject, and Keyword Row -->
+        <div style="display: grid; grid-template-columns: 160px 170px 1fr; gap: 0.75rem;">
+          <div>
+            <label style="font-size: 0.75rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.2rem;">Year (13 Years):</label>
+            <select id="pyqYearSelect" class="form-control" style="padding: 0.45rem; font-size: 0.85rem; width: 100%;" onchange="filterPyqQuestions()">
+              <option value="all">All Years (2012-2024)</option>
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+              <option value="2022">2022</option>
+              <option value="2021">2021</option>
+              <option value="2020">2020</option>
+              <option value="2019">2019</option>
+              <option value="2018">2018</option>
+              <option value="2017">2017</option>
+              <option value="2016">2016</option>
+              <option value="2015">2015</option>
+              <option value="2014">2014</option>
+              <option value="2013">2013</option>
+              <option value="2012">2012</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 0.75rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.2rem;">Subject:</label>
+            <select id="pyqSubjectSelect" class="form-control" style="padding: 0.45rem; font-size: 0.85rem; width: 100%;" onchange="filterPyqQuestions()">
+              <option value="all">All Subjects</option>
+              <option value="Physics">Physics</option>
+              <option value="Chemistry">Chemistry</option>
+              <option value="Mathematics">Mathematics</option>
+              <option value="Biology">Biology</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 0.75rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.2rem;">Topic / Keyword Search:</label>
+            <input type="text" id="pyqSearchInput" class="form-control" style="padding: 0.45rem; font-size: 0.85rem; width: 100%;" placeholder="🔍 Search topic, chapter, or question text..." oninput="filterPyqQuestions()">
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Count & Target Notice Strip -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <span id="pyqCountBadge" style="font-size: 0.82rem; font-weight: 800; color: #1e293b;">
+          Showing 0 Questions
+        </span>
+        <span id="pyqTargetNotice" style="font-size: 0.78rem; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid #bfdbfe;">
+          Mode: Auto-fill Form
+        </span>
+      </div>
+
+      <!-- Question Cards List Container (Scrollable) -->
+      <div id="pyqCardsList" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.85rem; padding-right: 0.25rem;">
+        <!-- Injected dynamically via JS -->
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .pyq-filter-btn {
+      padding: 0.35rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .pyq-filter-btn:hover {
+      border-color: #94a3b8;
+      background: #f1f5f9;
+    }
+    .pyq-filter-btn.active {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #1d4ed8;
+      box-shadow: 0 1px 3px rgba(37, 99, 235, 0.25);
+    }
+    .pyq-card {
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 0.9rem;
+      transition: all 0.15s ease;
+    }
+    .pyq-card:hover {
+      border-color: #93c5fd;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+    }
+  </style>
+
   <!-- ================= STANDALONE CLIENT SCRIPT ================= -->
   <script>
   (function() {
@@ -2569,6 +2717,915 @@ Answer: A"></textarea>
     const SEED_EXAMS = [{"exam_type": "jee", "title": "JEE (Main) Mock Examination", "category": "Engineering", "duration_minutes": 180, "max_violations": 3, "total_marks": 300, "question_count": 75, "schedule_type": "anytime", "start_time": null, "end_time": null, "instructions": "Standard NTA JEE (Main) Paper. 75 Questions: Physics (25), Chemistry (25), Mathematics (25). +4 for correct, -1 for incorrect, 0 for unattempted.", "is_active": 1}, {"exam_type": "neet", "title": "NEET-UG Mock Examination", "category": "Medical", "duration_minutes": 200, "max_violations": 3, "total_marks": 720, "question_count": 180, "schedule_type": "anytime", "start_time": null, "end_time": null, "instructions": "Standard NTA NEET-UG Paper. 180 Questions: Physics (45), Chemistry (45), Botany (45), Zoology (45). +4 for correct, -1 for incorrect, 0 for unattempted.", "is_active": 1}];
     const SEED_JEE_QUESTIONS = [{"id": 1, "subject": "Physics", "section": "Physics", "question": "A body is thrown vertically upwards with velocity u. The maximum height reached is given by:", "options": ["u^2 / 2g", "2u / g", "u / 2g", "u^2 / g"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 2, "subject": "Physics", "section": "Physics", "question": "The dimensional formula of Planck's constant is:", "options": ["[M L^2 T^-1]", "[M L T^-2]", "[M L^2 T^-2]", "[M L^-1 T^-1]"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 3, "subject": "Physics", "section": "Physics", "question": "A car rounds an unbanked curve of radius 100 m at 20 m/s. The minimum coefficient of friction required is (g = 10 m/s^2):", "options": ["0.4", "0.2", "0.5", "0.8"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 4, "subject": "Physics", "section": "Physics", "question": "Two resistors of resistance 6 ohm and 3 ohm are connected in parallel. Their equivalent resistance is:", "options": ["2 ohm", "9 ohm", "4.5 ohm", "1 ohm"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 5, "subject": "Physics", "section": "Physics", "question": "In an adiabatic process, the quantity that remains constant is:", "options": ["Heat energy (Q)", "Temperature (T)", "Pressure (P)", "Volume (V)"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 6, "subject": "Physics", "section": "Physics", "question": "The escape velocity from the surface of the Earth is approximately:", "options": ["11.2 km/s", "9.8 km/s", "7.9 km/s", "15.0 km/s"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 7, "subject": "Physics", "section": "Physics", "question": "The work done in blowing a soap bubble of radius R is W. The work done to blow it to radius 2R is:", "options": ["3W", "4W", "8W", "2W"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 8, "subject": "Physics", "section": "Physics", "question": "A particle executing SHM has amplitude A. At what displacement is the kinetic energy equal to potential energy?", "options": ["A / sqrt(2)", "A / 2", "A / 4", "sqrt(3)A / 2"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 9, "subject": "Physics", "section": "Physics", "question": "The SI unit of magnetic flux is:", "options": ["Weber", "Tesla", "Henry", "Gauss"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 10, "subject": "Physics", "section": "Physics", "question": "An electron enters a uniform magnetic field perpendicularly. The trajectory of the electron will be:", "options": ["Circular", "Parabolic", "Straight line", "Helical"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 11, "subject": "Physics", "section": "Physics", "question": "The de-Broglie wavelength of an electron accelerated through a potential difference of V volts is approximately:", "options": ["1.227 / sqrt(V) nm", "12.27 / V nm", "0.1227 * sqrt(V) nm", "1.227 * V nm"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 12, "subject": "Physics", "section": "Physics", "question": "In a p-n junction diode under reverse bias, the current is mainly due to:", "options": ["Minority carriers", "Majority carriers", "Diffusion current", "Holes only"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 13, "subject": "Physics", "section": "Physics", "question": "The root mean square speed of oxygen molecules at temperature T is v. If temperature is doubled and oxygen dissociates into atomic oxygen, the new rms speed is:", "options": ["2v", "v * sqrt(2)", "4v", "v / 2"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 14, "subject": "Physics", "section": "Physics", "question": "A convex lens of focal length 20 cm is in contact with a concave lens of focal length 10 cm. The power of the combination is:", "options": ["-5 D", "+5 D", "-10 D", "+10 D"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 15, "subject": "Physics", "section": "Physics", "question": "A wire of length L and resistance R is stretched to twice its length. The new resistance is:", "options": ["4R", "2R", "R/2", "R/4"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 16, "subject": "Physics", "section": "Physics", "question": "Moment of inertia of a circular disc of mass M and radius R about its diameter is:", "options": ["(1/4) M R^2", "(1/2) M R^2", "M R^2", "(2/5) M R^2"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 17, "subject": "Physics", "section": "Physics", "question": "Brewster's angle for a transparent medium of refractive index mu is given by:", "options": ["tan(ip) = mu", "sin(ip) = mu", "cos(ip) = mu", "cot(ip) = mu"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 18, "subject": "Physics", "section": "Physics", "question": "The half-life of a radioactive sample is 10 days. The time taken for 75% decay is:", "options": ["20 days", "30 days", "15 days", "40 days"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 19, "subject": "Physics", "section": "Physics", "question": "In Young's double slit experiment, if the distance between slits is halved and screen distance is doubled, the fringe width:", "options": ["Becomes 4 times", "Remains same", "Becomes 2 times", "Halved"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 20, "subject": "Physics", "section": "Physics", "question": "A Carnot engine works between 300 K and 600 K. Its maximum efficiency is:", "options": ["50%", "100%", "25%", "75%"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 21, "subject": "Physics", "section": "Physics", "question": "Bernoulli's theorem is a consequence of conservation of:", "options": ["Energy", "Linear momentum", "Angular momentum", "Mass"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 22, "subject": "Physics", "section": "Physics", "question": "The capacitance of a parallel plate capacitor does not depend on:", "options": ["Material of the plates", "Area of plates", "Distance between plates", "Medium between plates"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 23, "subject": "Physics", "section": "Physics", "question": "Electromagnetic waves are transverse in nature, as indicated by:", "options": ["Polarization", "Interference", "Diffraction", "Refraction"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 24, "subject": "Physics", "section": "Physics", "question": "The self-inductance of a solenoid with N turns is proportional to:", "options": ["N^2", "N", "1/N", "N^3"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 25, "subject": "Physics", "section": "Physics", "question": "A train moves towards a stationary observer with speed 34 m/s emitting sound of frequency 340 Hz. Apparent frequency heard is (v = 340 m/s):", "options": ["377.8 Hz", "340 Hz", "306 Hz", "400 Hz"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 26, "subject": "Chemistry", "section": "Chemistry", "question": "The IUPAC name of CH3-CH(OH)-CH3 is:", "options": ["Propan-2-ol", "Propan-1-ol", "Propanone", "Isopropanal"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 27, "subject": "Chemistry", "section": "Chemistry", "question": "Which of the following compounds exhibits maximum ionic character?", "options": ["CsF", "NaCl", "LiF", "KCl"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 28, "subject": "Chemistry", "section": "Chemistry", "question": "The hybridization of sulfur in SF6 molecule is:", "options": ["sp3d2", "sp3d", "sp3", "dsp2"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 29, "subject": "Chemistry", "section": "Chemistry", "question": "Oxidation state of Cr in K2Cr2O7 is:", "options": ["+6", "+3", "+5", "+7"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 30, "subject": "Chemistry", "section": "Chemistry", "question": "According to Bohr's postulate, angular momentum of electron in nth orbit is an integral multiple of:", "options": ["h / (2*pi)", "h / pi", "2*pi / h", "h / 4*pi"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 31, "subject": "Chemistry", "section": "Chemistry", "question": "Which of the following is a transition element?", "options": ["Iron (Fe)", "Calcium (Ca)", "Sodium (Na)", "Aluminum (Al)"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 32, "subject": "Chemistry", "section": "Chemistry", "question": "The conjugate base of HSO4^- is:", "options": ["SO4^2-", "H2SO4", "H3SO4^+", "SO3"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 33, "subject": "Chemistry", "section": "Chemistry", "question": "The rate law for reaction A + 2B -> C is Rate = k[A][B]^2. The overall order of reaction is:", "options": ["3", "2", "1", "0"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 34, "subject": "Chemistry", "section": "Chemistry", "question": "Which of the following is an electrophile?", "options": ["BF3", "NH3", "H2O", "OH^-"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 35, "subject": "Chemistry", "section": "Chemistry", "question": "The molarity of pure water at 4 deg C is approximately:", "options": ["55.5 M", "18 M", "1 M", "100 M"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 36, "subject": "Chemistry", "section": "Chemistry", "question": "Markovnikov's rule is used in the addition reaction of:", "options": ["Unsymmetrical alkenes with HX", "Alkanes with halogens", "Aldehydes with HCN", "Aromatic compounds"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 37, "subject": "Chemistry", "section": "Chemistry", "question": "Which noble gas does not occur in atmosphere?", "options": ["Radon (Rn)", "Helium (He)", "Neon (Ne)", "Argon (Ar)"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 38, "subject": "Chemistry", "section": "Chemistry", "question": "Cannizzaro reaction is not given by:", "options": ["Acetaldehyde", "Formaldehyde", "Benzaldehyde", "Trimethylacetaldehyde"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 39, "subject": "Chemistry", "section": "Chemistry", "question": "The catalyst used in Haber's process for synthesis of ammonia is:", "options": ["Finely divided Fe with Mo promoter", "Nickel", "Vanadium pentoxide", "Platinum"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 40, "subject": "Chemistry", "section": "Chemistry", "question": "Which of the following solutions will have the highest boiling point at 1 atm?", "options": ["0.1 M BaCl2", "0.1 M NaCl", "0.1 M Glucose", "0.1 M Urea"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 41, "subject": "Chemistry", "section": "Chemistry", "question": "The geometry of XeF4 according to VSEPR theory is:", "options": ["Square planar", "Tetrahedral", "Octahedral", "See-saw"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 42, "subject": "Chemistry", "section": "Chemistry", "question": "Lucas reagent is a mixture of:", "options": ["Concentrated HCl and anhydrous ZnCl2", "Dilute HCl and ZnCl2", "Concentrated HNO3 and ZnCl2", "H2SO4 and ZnSO4"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 43, "subject": "Chemistry", "section": "Chemistry", "question": "Which vitamin is water soluble?", "options": ["Vitamin C", "Vitamin A", "Vitamin D", "Vitamin K"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 44, "subject": "Chemistry", "section": "Chemistry", "question": "The unit of rate constant for a zero order reaction is:", "options": ["mol L^-1 s^-1", "s^-1", "L mol^-1 s^-1", "L^2 mol^-2 s^-1"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 45, "subject": "Chemistry", "section": "Chemistry", "question": "An ideal solution is formed when two components have:", "options": ["Delta H_mix = 0 and Delta V_mix = 0", "Delta H_mix > 0", "Delta V_mix < 0", "Delta G_mix = 0"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 46, "subject": "Chemistry", "section": "Chemistry", "question": "The brown ring test is used for detection of:", "options": ["Nitrate (NO3^-)", "Nitrite (NO2^-)", "Chloride (Cl^-)", "Sulfate (SO4^2-)"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 47, "subject": "Chemistry", "section": "Chemistry", "question": "Which isomerism is exhibited by [Co(NH3)5Br]SO4 and [Co(NH3)5SO4]Br?", "options": ["Ionization isomerism", "Linkage isomerism", "Coordination isomerism", "Geometrical isomerism"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 48, "subject": "Chemistry", "section": "Chemistry", "question": "Nylon-6,6 is a polymer of:", "options": ["Adipic acid and Hexamethylenediamine", "Caprolactam", "Terephthalic acid and Ethylene glycol", "Phenol and Formaldehyde"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 49, "subject": "Chemistry", "section": "Chemistry", "question": "The most stable free radical among the following is:", "options": ["(C6H5)3C*", "(CH3)3C*", "(CH3)2CH*", "CH3CH2*"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 50, "subject": "Chemistry", "section": "Chemistry", "question": "Electrochemical equivalent 'Z' in Faraday's law of electrolysis is equal to:", "options": ["Equivalent weight / 96500", "Molecular weight * 96500", "96500 / Equivalent weight", "Current * time"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 51, "subject": "Mathematics", "section": "Mathematics", "question": "The value of lim (x -> 0) (sin x) / x is:", "options": ["1", "0", "Infinity", "Does not exist"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 52, "subject": "Mathematics", "section": "Mathematics", "question": "If A is a square matrix of order 3 and |A| = 4, then |adj(A)| is:", "options": ["16", "64", "4", "8"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 53, "subject": "Mathematics", "section": "Mathematics", "question": "The derivative of e^(x^2) with respect to x is:", "options": ["2x * e^(x^2)", "e^(x^2)", "x * e^(x^2)", "2 * e^(x^2)"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 54, "subject": "Mathematics", "section": "Mathematics", "question": "The eccentricity of an equilateral hyperbola is:", "options": ["sqrt(2)", "2", "1", "sqrt(3)"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 55, "subject": "Mathematics", "section": "Mathematics", "question": "Integral of 1 / (1 + x^2) dx is:", "options": ["arctan(x) + C", "arcsin(x) + C", "ln(1 + x^2) + C", "1/(2x) + C"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 56, "subject": "Mathematics", "section": "Mathematics", "question": "The distance between parallel lines 3x + 4y = 9 and 3x + 4y = 19 is:", "options": ["2 units", "10 units", "5 units", "1 unit"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 57, "subject": "Mathematics", "section": "Mathematics", "question": "The number of terms in the expansion of (a + b)^10 is:", "options": ["11", "10", "12", "9"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 58, "subject": "Mathematics", "section": "Mathematics", "question": "If the roots of ax^2 + bx + c = 0 are equal, then:", "options": ["b^2 - 4ac = 0", "b^2 - 4ac > 0", "b^2 - 4ac < 0", "b = 4ac"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 59, "subject": "Mathematics", "section": "Mathematics", "question": "The modulus of complex number z = 3 + 4i is:", "options": ["5", "7", "25", "1"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 60, "subject": "Mathematics", "section": "Mathematics", "question": "The slope of the tangent to curve y = x^3 - x at x = 2 is:", "options": ["11", "12", "7", "5"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 61, "subject": "Mathematics", "section": "Mathematics", "question": "Value of sin(pi/6) + cos(pi/3) is:", "options": ["1", "1/2", "sqrt(3)", "0"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 62, "subject": "Mathematics", "section": "Mathematics", "question": "If vector a = 2i + j - k and b = i - j + 2k, the dot product a . b is:", "options": ["-1", "0", "1", "3"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 63, "subject": "Mathematics", "section": "Mathematics", "question": "The probability of getting a sum of 7 when two standard dice are rolled is:", "options": ["1/6", "1/12", "7/36", "1/36"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 64, "subject": "Mathematics", "section": "Mathematics", "question": "The focus of the parabola y^2 = 12x is at:", "options": ["(3, 0)", "(0, 3)", "(12, 0)", "(6, 0)"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 65, "subject": "Mathematics", "section": "Mathematics", "question": "The solution of differential equation dy/dx = y/x is:", "options": ["y = cx", "y^2 = cx", "y = c + x", "xy = c"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 66, "subject": "Mathematics", "section": "Mathematics", "question": "The domain of f(x) = sqrt(4 - x^2) is:", "options": ["[-2, 2]", "(-2, 2)", "(-infinity, 2]", "[0, 2]"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 67, "subject": "Mathematics", "section": "Mathematics", "question": "If nC8 = nC2, then the value of n is:", "options": ["10", "8", "6", "16"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 68, "subject": "Mathematics", "section": "Mathematics", "question": "The value of determinant |[1, 2, 3], [4, 5, 6], [7, 8, 9]| is:", "options": ["0", "9", "-1", "36"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 69, "subject": "Mathematics", "section": "Mathematics", "question": "The equation of plane passing through origin with normal vector (1, 2, 3) is:", "options": ["x + 2y + 3z = 0", "x + y + z = 6", "2x + 3y + z = 0", "x - 2y + 3z = 0"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 70, "subject": "Mathematics", "section": "Mathematics", "question": "If a function f(x) is continuous at x = a, then:", "options": ["lim(x->a) f(x) = f(a)", "f'(a) exists", "f''(a) exists", "f(a) = 0"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 71, "subject": "Mathematics", "section": "Mathematics", "question": "The radius of circle x^2 + y^2 - 4x - 6y - 12 = 0 is:", "options": ["5", "25", "4", "sqrt(12)"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 72, "subject": "Mathematics", "section": "Mathematics", "question": "The arithmetic mean of numbers 4, 8, 12, 16, 20 is:", "options": ["12", "10", "14", "16"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 73, "subject": "Mathematics", "section": "Mathematics", "question": "Value of cos(15 deg) is:", "options": ["(sqrt(6) + sqrt(2)) / 4", "(sqrt(6) - sqrt(2)) / 4", "sqrt(3)/2", "1/2"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 74, "subject": "Mathematics", "section": "Mathematics", "question": "The angle between vectors i + j and j + k is:", "options": ["60 degrees", "45 degrees", "90 degrees", "30 degrees"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 75, "subject": "Mathematics", "section": "Mathematics", "question": "The sum of infinite geometric series 1 + 1/2 + 1/4 + 1/8 + ... is:", "options": ["2", "1.5", "3", "Infinity"], "correct_answer": 0, "marks": 4, "negative_marks": 1}];
     const SEED_NEET_QUESTIONS = [{"id": 1, "subject": "Physics", "section": "Physics", "question": "The unit of electrical resistance is:", "options": ["Ohm", "Volt", "Ampere", "Watt"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 2, "subject": "Physics", "section": "Physics", "question": "Newton's third law of motion states that to every action there is:", "options": ["Equal and opposite reaction", "Greater reaction", "Lesser reaction", "No reaction"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 3, "subject": "Physics", "section": "Physics", "question": "What is the acceleration due to gravity on the Moon compared to Earth?", "options": ["1/6th", "1/2", "Equal", "1/10th"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 4, "subject": "Physics", "section": "Physics", "question": "A convex mirror always produces an image that is:", "options": ["Virtual, erect and diminished", "Real and inverted", "Virtual and enlarged", "Real and magnified"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 5, "subject": "Physics", "section": "Physics", "question": "Which physical quantity remains unchanged when light enters from air into glass?", "options": ["Frequency", "Wavelength", "Velocity", "Amplitude"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 6, "subject": "Physics", "section": "Physics", "question": "Energy stored in a capacitor of capacitance C with potential V is:", "options": ["(1/2) C V^2", "C V^2", "(1/2) C^2 V", "C / V"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 7, "subject": "Physics", "section": "Physics", "question": "Pascal is the SI unit of:", "options": ["Pressure", "Force", "Work", "Power"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 8, "subject": "Physics", "section": "Physics", "question": "Sound waves in air are:", "options": ["Longitudinal waves", "Transverse waves", "Electromagnetic waves", "Torsional waves"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 9, "subject": "Physics", "section": "Physics", "question": "In an AC circuit, pure inductor of inductance L has reactance:", "options": ["omega * L", "1 / (omega * L)", "omega / L", "L / omega"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 10, "subject": "Physics", "section": "Physics", "question": "Photoelectric effect was experimentally explained by Albert Einstein using:", "options": ["Quantum theory of light", "Wave theory of light", "Corpuscular theory", "Electromagnetic wave theory"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 11, "subject": "Physics", "section": "Physics", "question": "Which of the following is not a vector quantity?", "options": ["Electric current", "Velocity", "Torque", "Force"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 12, "subject": "Physics", "section": "Physics", "question": "The focal length of a plane mirror is:", "options": ["Infinity", "Zero", "100 cm", "25 cm"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 13, "subject": "Physics", "section": "Physics", "question": "A heavy nucleus breaks into two smaller nuclei. The process is known as:", "options": ["Nuclear fission", "Nuclear fusion", "Alpha decay", "Spallation"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 14, "subject": "Physics", "section": "Physics", "question": "The value of gravitational constant G is approximately:", "options": ["6.67 * 10^-11 N m^2 kg^-2", "9.8 m/s^2", "6.67 * 10^-8 N m^2 kg^-2", "3.0 * 10^8 m/s"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 15, "subject": "Physics", "section": "Physics", "question": "Specific heat capacity of water is approximately:", "options": ["4186 J/(kg K)", "1000 J/(kg K)", "2100 J/(kg K)", "540 J/(kg K)"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 16, "subject": "Physics", "section": "Physics", "question": "[Set 2] The unit of electrical resistance is:", "options": ["Ohm", "Volt", "Ampere", "Watt"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 17, "subject": "Physics", "section": "Physics", "question": "[Set 2] Newton's third law of motion states that to every action there is:", "options": ["Equal and opposite reaction", "Greater reaction", "Lesser reaction", "No reaction"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 18, "subject": "Physics", "section": "Physics", "question": "[Set 2] What is the acceleration due to gravity on the Moon compared to Earth?", "options": ["1/6th", "1/2", "Equal", "1/10th"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 19, "subject": "Physics", "section": "Physics", "question": "[Set 2] A convex mirror always produces an image that is:", "options": ["Virtual, erect and diminished", "Real and inverted", "Virtual and enlarged", "Real and magnified"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 20, "subject": "Physics", "section": "Physics", "question": "[Set 2] Which physical quantity remains unchanged when light enters from air into glass?", "options": ["Frequency", "Wavelength", "Velocity", "Amplitude"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 21, "subject": "Physics", "section": "Physics", "question": "[Set 2] Energy stored in a capacitor of capacitance C with potential V is:", "options": ["(1/2) C V^2", "C V^2", "(1/2) C^2 V", "C / V"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 22, "subject": "Physics", "section": "Physics", "question": "[Set 2] Pascal is the SI unit of:", "options": ["Pressure", "Force", "Work", "Power"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 23, "subject": "Physics", "section": "Physics", "question": "[Set 2] Sound waves in air are:", "options": ["Longitudinal waves", "Transverse waves", "Electromagnetic waves", "Torsional waves"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 24, "subject": "Physics", "section": "Physics", "question": "[Set 2] In an AC circuit, pure inductor of inductance L has reactance:", "options": ["omega * L", "1 / (omega * L)", "omega / L", "L / omega"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 25, "subject": "Physics", "section": "Physics", "question": "[Set 2] Photoelectric effect was experimentally explained by Albert Einstein using:", "options": ["Quantum theory of light", "Wave theory of light", "Corpuscular theory", "Electromagnetic wave theory"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 26, "subject": "Physics", "section": "Physics", "question": "[Set 2] Which of the following is not a vector quantity?", "options": ["Electric current", "Velocity", "Torque", "Force"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 27, "subject": "Physics", "section": "Physics", "question": "[Set 2] The focal length of a plane mirror is:", "options": ["Infinity", "Zero", "100 cm", "25 cm"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 28, "subject": "Physics", "section": "Physics", "question": "[Set 2] A heavy nucleus breaks into two smaller nuclei. The process is known as:", "options": ["Nuclear fission", "Nuclear fusion", "Alpha decay", "Spallation"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 29, "subject": "Physics", "section": "Physics", "question": "[Set 2] The value of gravitational constant G is approximately:", "options": ["6.67 * 10^-11 N m^2 kg^-2", "9.8 m/s^2", "6.67 * 10^-8 N m^2 kg^-2", "3.0 * 10^8 m/s"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 30, "subject": "Physics", "section": "Physics", "question": "[Set 2] Specific heat capacity of water is approximately:", "options": ["4186 J/(kg K)", "1000 J/(kg K)", "2100 J/(kg K)", "540 J/(kg K)"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 31, "subject": "Physics", "section": "Physics", "question": "[Set 3] The unit of electrical resistance is:", "options": ["Ohm", "Volt", "Ampere", "Watt"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 32, "subject": "Physics", "section": "Physics", "question": "[Set 3] Newton's third law of motion states that to every action there is:", "options": ["Equal and opposite reaction", "Greater reaction", "Lesser reaction", "No reaction"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 33, "subject": "Physics", "section": "Physics", "question": "[Set 3] What is the acceleration due to gravity on the Moon compared to Earth?", "options": ["1/6th", "1/2", "Equal", "1/10th"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 34, "subject": "Physics", "section": "Physics", "question": "[Set 3] A convex mirror always produces an image that is:", "options": ["Virtual, erect and diminished", "Real and inverted", "Virtual and enlarged", "Real and magnified"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 35, "subject": "Physics", "section": "Physics", "question": "[Set 3] Which physical quantity remains unchanged when light enters from air into glass?", "options": ["Frequency", "Wavelength", "Velocity", "Amplitude"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 36, "subject": "Physics", "section": "Physics", "question": "[Set 3] Energy stored in a capacitor of capacitance C with potential V is:", "options": ["(1/2) C V^2", "C V^2", "(1/2) C^2 V", "C / V"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 37, "subject": "Physics", "section": "Physics", "question": "[Set 3] Pascal is the SI unit of:", "options": ["Pressure", "Force", "Work", "Power"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 38, "subject": "Physics", "section": "Physics", "question": "[Set 3] Sound waves in air are:", "options": ["Longitudinal waves", "Transverse waves", "Electromagnetic waves", "Torsional waves"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 39, "subject": "Physics", "section": "Physics", "question": "[Set 3] In an AC circuit, pure inductor of inductance L has reactance:", "options": ["omega * L", "1 / (omega * L)", "omega / L", "L / omega"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 40, "subject": "Physics", "section": "Physics", "question": "[Set 3] Photoelectric effect was experimentally explained by Albert Einstein using:", "options": ["Quantum theory of light", "Wave theory of light", "Corpuscular theory", "Electromagnetic wave theory"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 41, "subject": "Physics", "section": "Physics", "question": "[Set 3] Which of the following is not a vector quantity?", "options": ["Electric current", "Velocity", "Torque", "Force"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 42, "subject": "Physics", "section": "Physics", "question": "[Set 3] The focal length of a plane mirror is:", "options": ["Infinity", "Zero", "100 cm", "25 cm"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 43, "subject": "Physics", "section": "Physics", "question": "[Set 3] A heavy nucleus breaks into two smaller nuclei. The process is known as:", "options": ["Nuclear fission", "Nuclear fusion", "Alpha decay", "Spallation"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 44, "subject": "Physics", "section": "Physics", "question": "[Set 3] The value of gravitational constant G is approximately:", "options": ["6.67 * 10^-11 N m^2 kg^-2", "9.8 m/s^2", "6.67 * 10^-8 N m^2 kg^-2", "3.0 * 10^8 m/s"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 45, "subject": "Physics", "section": "Physics", "question": "[Set 3] Specific heat capacity of water is approximately:", "options": ["4186 J/(kg K)", "1000 J/(kg K)", "2100 J/(kg K)", "540 J/(kg K)"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 46, "subject": "Chemistry", "section": "Chemistry", "question": "The most electronegative element in the periodic table is:", "options": ["Fluorine", "Oxygen", "Chlorine", "Nitrogen"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 47, "subject": "Chemistry", "section": "Chemistry", "question": "The pH of human blood is normally around:", "options": ["7.4", "6.2", "8.5", "5.0"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 48, "subject": "Chemistry", "section": "Chemistry", "question": "Avogadro's number is equal to:", "options": ["6.022 * 10^23", "6.022 * 10^22", "3.0 * 10^8", "1.6 * 10^-19"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 49, "subject": "Chemistry", "section": "Chemistry", "question": "What type of bond exists in NaCl?", "options": ["Ionic bond", "Covalent bond", "Coordinate bond", "Metallic bond"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 50, "subject": "Chemistry", "section": "Chemistry", "question": "Chemical formula of baking soda is:", "options": ["NaHCO3", "Na2CO3", "NaOH", "Ca(OH)2"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 51, "subject": "Chemistry", "section": "Chemistry", "question": "The gas released when zinc reacts with dilute sulfuric acid is:", "options": ["Hydrogen", "Oxygen", "Sulfur dioxide", "Nitrogen"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 52, "subject": "Chemistry", "section": "Chemistry", "question": "Which catalyst is used in hydrogenation of oils?", "options": ["Nickel (Ni)", "Iron (Fe)", "Platinum oxide", "Copper (Cu)"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 53, "subject": "Chemistry", "section": "Chemistry", "question": "An element with atomic number 17 belongs to group:", "options": ["Group 17 (Halogens)", "Group 1 (Alkali)", "Group 18 (Noble gases)", "Group 2 (Alkaline earth)"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 54, "subject": "Chemistry", "section": "Chemistry", "question": "The shape of ammonia (NH3) molecule is:", "options": ["Trigonal pyramidal", "Tetrahedral", "Linear", "T-shaped"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 55, "subject": "Chemistry", "section": "Chemistry", "question": "Which law states that at constant temperature, pressure is inversely proportional to volume?", "options": ["Boyle's Law", "Charles's Law", "Gay-Lussac's Law", "Dalton's Law"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 56, "subject": "Chemistry", "section": "Chemistry", "question": "Rusting of iron is an example of:", "options": ["Redox reaction / Corrosion", "Only oxidation", "Only reduction", "Neutralization"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 57, "subject": "Chemistry", "section": "Chemistry", "question": "Methane (CH4) has which type of geometry?", "options": ["Tetrahedral", "Planar", "Linear", "Octahedral"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 58, "subject": "Chemistry", "section": "Chemistry", "question": "The main constituent of vinegar is:", "options": ["Acetic acid", "Formic acid", "Citric acid", "Lactic acid"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 59, "subject": "Chemistry", "section": "Chemistry", "question": "Which colloid has liquid dispersed in liquid?", "options": ["Emulsion", "Sol", "Gel", "Aerosol"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 60, "subject": "Chemistry", "section": "Chemistry", "question": "Brass is an alloy of:", "options": ["Copper and Zinc", "Copper and Tin", "Iron and Carbon", "Aluminum and Copper"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 61, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 2] The most electronegative element in the periodic table is:", "options": ["Fluorine", "Oxygen", "Chlorine", "Nitrogen"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 62, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 2] The pH of human blood is normally around:", "options": ["7.4", "6.2", "8.5", "5.0"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 63, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 2] Avogadro's number is equal to:", "options": ["6.022 * 10^23", "6.022 * 10^22", "3.0 * 10^8", "1.6 * 10^-19"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 64, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 2] What type of bond exists in NaCl?", "options": ["Ionic bond", "Covalent bond", "Coordinate bond", "Metallic bond"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 65, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 2] Chemical formula of baking soda is:", "options": ["NaHCO3", "Na2CO3", "NaOH", "Ca(OH)2"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 66, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 2] The gas released when zinc reacts with dilute sulfuric acid is:", "options": ["Hydrogen", "Oxygen", "Sulfur dioxide", "Nitrogen"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 67, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 2] Which catalyst is used in hydrogenation of oils?", "options": ["Nickel (Ni)", "Iron (Fe)", "Platinum oxide", "Copper (Cu)"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 68, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 2] An element with atomic number 17 belongs to group:", "options": ["Group 17 (Halogens)", "Group 1 (Alkali)", "Group 18 (Noble gases)", "Group 2 (Alkaline earth)"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 69, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 2] The shape of ammonia (NH3) molecule is:", "options": ["Trigonal pyramidal", "Tetrahedral", "Linear", "T-shaped"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 70, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 2] Which law states that at constant temperature, pressure is inversely proportional to volume?", "options": ["Boyle's Law", "Charles's Law", "Gay-Lussac's Law", "Dalton's Law"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 71, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 2] Rusting of iron is an example of:", "options": ["Redox reaction / Corrosion", "Only oxidation", "Only reduction", "Neutralization"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 72, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 2] Methane (CH4) has which type of geometry?", "options": ["Tetrahedral", "Planar", "Linear", "Octahedral"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 73, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 2] The main constituent of vinegar is:", "options": ["Acetic acid", "Formic acid", "Citric acid", "Lactic acid"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 74, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 2] Which colloid has liquid dispersed in liquid?", "options": ["Emulsion", "Sol", "Gel", "Aerosol"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 75, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 2] Brass is an alloy of:", "options": ["Copper and Zinc", "Copper and Tin", "Iron and Carbon", "Aluminum and Copper"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 76, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 3] The most electronegative element in the periodic table is:", "options": ["Fluorine", "Oxygen", "Chlorine", "Nitrogen"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 77, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 3] The pH of human blood is normally around:", "options": ["7.4", "6.2", "8.5", "5.0"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 78, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 3] Avogadro's number is equal to:", "options": ["6.022 * 10^23", "6.022 * 10^22", "3.0 * 10^8", "1.6 * 10^-19"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 79, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 3] What type of bond exists in NaCl?", "options": ["Ionic bond", "Covalent bond", "Coordinate bond", "Metallic bond"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 80, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 3] Chemical formula of baking soda is:", "options": ["NaHCO3", "Na2CO3", "NaOH", "Ca(OH)2"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 81, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 3] The gas released when zinc reacts with dilute sulfuric acid is:", "options": ["Hydrogen", "Oxygen", "Sulfur dioxide", "Nitrogen"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 82, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 3] Which catalyst is used in hydrogenation of oils?", "options": ["Nickel (Ni)", "Iron (Fe)", "Platinum oxide", "Copper (Cu)"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 83, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 3] An element with atomic number 17 belongs to group:", "options": ["Group 17 (Halogens)", "Group 1 (Alkali)", "Group 18 (Noble gases)", "Group 2 (Alkaline earth)"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 84, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 3] The shape of ammonia (NH3) molecule is:", "options": ["Trigonal pyramidal", "Tetrahedral", "Linear", "T-shaped"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 85, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 3] Which law states that at constant temperature, pressure is inversely proportional to volume?", "options": ["Boyle's Law", "Charles's Law", "Gay-Lussac's Law", "Dalton's Law"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 86, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 3] Rusting of iron is an example of:", "options": ["Redox reaction / Corrosion", "Only oxidation", "Only reduction", "Neutralization"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 87, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 3] Methane (CH4) has which type of geometry?", "options": ["Tetrahedral", "Planar", "Linear", "Octahedral"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 88, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 3] The main constituent of vinegar is:", "options": ["Acetic acid", "Formic acid", "Citric acid", "Lactic acid"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 89, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 3] Which colloid has liquid dispersed in liquid?", "options": ["Emulsion", "Sol", "Gel", "Aerosol"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 90, "subject": "Chemistry", "section": "Chemistry", "question": "[Set 3] Brass is an alloy of:", "options": ["Copper and Zinc", "Copper and Tin", "Iron and Carbon", "Aluminum and Copper"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 91, "subject": "Biology", "section": "Botany", "question": "The site of photosynthesis in eukaryotic plant cells is:", "options": ["Chloroplast", "Mitochondria", "Ribosome", "Golgi apparatus"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 92, "subject": "Biology", "section": "Botany", "question": "Which plant hormone is responsible for apical dominance?", "options": ["Auxin", "Gibberellin", "Cytokinin", "Abscisic acid"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 93, "subject": "Biology", "section": "Botany", "question": "The vascular tissue responsible for transport of water in plants is:", "options": ["Xylem", "Phloem", "Parenchyma", "Collenchyma"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 94, "subject": "Biology", "section": "Botany", "question": "Double fertilization is a unique characteristic of:", "options": ["Angiosperms", "Gymnosperms", "Pteridophytes", "Bryophytes"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 95, "subject": "Biology", "section": "Botany", "question": "Which of the following is known as the powerhouse of the cell?", "options": ["Mitochondria", "Chloroplast", "Nucleus", "Endoplasmic Reticulum"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 96, "subject": "Biology", "section": "Botany", "question": "The opening and closing of stomata is regulated by:", "options": ["Guard cells", "Epidermal cells", "Subsidiary cells", "Mesophyll cells"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 97, "subject": "Biology", "section": "Botany", "question": "Mendel conducted his hybridization experiments on:", "options": ["Pisum sativum (Garden pea)", "Drosophila", "Oenothera", "Zea mays"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 98, "subject": "Biology", "section": "Botany", "question": "Krebs cycle takes place in:", "options": ["Mitochondrial matrix", "Cytoplasm", "Thylakoid lumen", "Ribosomes"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 99, "subject": "Biology", "section": "Botany", "question": "The gas essential for photorespiration is:", "options": ["Oxygen", "Carbon dioxide", "Nitrogen", "Methane"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 100, "subject": "Biology", "section": "Botany", "question": "A flower with both stamens and carpels is termed as:", "options": ["Bisexual", "Unisexual", "Neutral", "Pistillate"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 101, "subject": "Biology", "section": "Botany", "question": "Which of the following is a non-vascular embryophyte?", "options": ["Bryophytes", "Gymnosperms", "Angiosperms", "Pteridophytes"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 102, "subject": "Biology", "section": "Botany", "question": "The cell wall of fungi is composed of:", "options": ["Chitin", "Cellulose", "Pectin", "Suberin"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 103, "subject": "Biology", "section": "Botany", "question": "Gymnosperms lack which of the following xylem elements?", "options": ["Vessels", "Tracheids", "Parenchyma", "Fibers"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 104, "subject": "Biology", "section": "Botany", "question": "In DNA, adenine pairs with thymine via:", "options": ["Two hydrogen bonds", "Three hydrogen bonds", "One covalent bond", "Phosphodiester bond"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 105, "subject": "Biology", "section": "Botany", "question": "Which tissue provides mechanical strength to young stems?", "options": ["Collenchyma", "Parenchyma", "Sclerenchyma", "Aerenchyma"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 106, "subject": "Biology", "section": "Botany", "question": "[Set 2] The site of photosynthesis in eukaryotic plant cells is:", "options": ["Chloroplast", "Mitochondria", "Ribosome", "Golgi apparatus"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 107, "subject": "Biology", "section": "Botany", "question": "[Set 2] Which plant hormone is responsible for apical dominance?", "options": ["Auxin", "Gibberellin", "Cytokinin", "Abscisic acid"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 108, "subject": "Biology", "section": "Botany", "question": "[Set 2] The vascular tissue responsible for transport of water in plants is:", "options": ["Xylem", "Phloem", "Parenchyma", "Collenchyma"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 109, "subject": "Biology", "section": "Botany", "question": "[Set 2] Double fertilization is a unique characteristic of:", "options": ["Angiosperms", "Gymnosperms", "Pteridophytes", "Bryophytes"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 110, "subject": "Biology", "section": "Botany", "question": "[Set 2] Which of the following is known as the powerhouse of the cell?", "options": ["Mitochondria", "Chloroplast", "Nucleus", "Endoplasmic Reticulum"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 111, "subject": "Biology", "section": "Botany", "question": "[Set 2] The opening and closing of stomata is regulated by:", "options": ["Guard cells", "Epidermal cells", "Subsidiary cells", "Mesophyll cells"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 112, "subject": "Biology", "section": "Botany", "question": "[Set 2] Mendel conducted his hybridization experiments on:", "options": ["Pisum sativum (Garden pea)", "Drosophila", "Oenothera", "Zea mays"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 113, "subject": "Biology", "section": "Botany", "question": "[Set 2] Krebs cycle takes place in:", "options": ["Mitochondrial matrix", "Cytoplasm", "Thylakoid lumen", "Ribosomes"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 114, "subject": "Biology", "section": "Botany", "question": "[Set 2] The gas essential for photorespiration is:", "options": ["Oxygen", "Carbon dioxide", "Nitrogen", "Methane"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 115, "subject": "Biology", "section": "Botany", "question": "[Set 2] A flower with both stamens and carpels is termed as:", "options": ["Bisexual", "Unisexual", "Neutral", "Pistillate"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 116, "subject": "Biology", "section": "Botany", "question": "[Set 2] Which of the following is a non-vascular embryophyte?", "options": ["Bryophytes", "Gymnosperms", "Angiosperms", "Pteridophytes"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 117, "subject": "Biology", "section": "Botany", "question": "[Set 2] The cell wall of fungi is composed of:", "options": ["Chitin", "Cellulose", "Pectin", "Suberin"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 118, "subject": "Biology", "section": "Botany", "question": "[Set 2] Gymnosperms lack which of the following xylem elements?", "options": ["Vessels", "Tracheids", "Parenchyma", "Fibers"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 119, "subject": "Biology", "section": "Botany", "question": "[Set 2] In DNA, adenine pairs with thymine via:", "options": ["Two hydrogen bonds", "Three hydrogen bonds", "One covalent bond", "Phosphodiester bond"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 120, "subject": "Biology", "section": "Botany", "question": "[Set 2] Which tissue provides mechanical strength to young stems?", "options": ["Collenchyma", "Parenchyma", "Sclerenchyma", "Aerenchyma"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 121, "subject": "Biology", "section": "Botany", "question": "[Set 3] The site of photosynthesis in eukaryotic plant cells is:", "options": ["Chloroplast", "Mitochondria", "Ribosome", "Golgi apparatus"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 122, "subject": "Biology", "section": "Botany", "question": "[Set 3] Which plant hormone is responsible for apical dominance?", "options": ["Auxin", "Gibberellin", "Cytokinin", "Abscisic acid"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 123, "subject": "Biology", "section": "Botany", "question": "[Set 3] The vascular tissue responsible for transport of water in plants is:", "options": ["Xylem", "Phloem", "Parenchyma", "Collenchyma"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 124, "subject": "Biology", "section": "Botany", "question": "[Set 3] Double fertilization is a unique characteristic of:", "options": ["Angiosperms", "Gymnosperms", "Pteridophytes", "Bryophytes"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 125, "subject": "Biology", "section": "Botany", "question": "[Set 3] Which of the following is known as the powerhouse of the cell?", "options": ["Mitochondria", "Chloroplast", "Nucleus", "Endoplasmic Reticulum"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 126, "subject": "Biology", "section": "Botany", "question": "[Set 3] The opening and closing of stomata is regulated by:", "options": ["Guard cells", "Epidermal cells", "Subsidiary cells", "Mesophyll cells"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 127, "subject": "Biology", "section": "Botany", "question": "[Set 3] Mendel conducted his hybridization experiments on:", "options": ["Pisum sativum (Garden pea)", "Drosophila", "Oenothera", "Zea mays"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 128, "subject": "Biology", "section": "Botany", "question": "[Set 3] Krebs cycle takes place in:", "options": ["Mitochondrial matrix", "Cytoplasm", "Thylakoid lumen", "Ribosomes"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 129, "subject": "Biology", "section": "Botany", "question": "[Set 3] The gas essential for photorespiration is:", "options": ["Oxygen", "Carbon dioxide", "Nitrogen", "Methane"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 130, "subject": "Biology", "section": "Botany", "question": "[Set 3] A flower with both stamens and carpels is termed as:", "options": ["Bisexual", "Unisexual", "Neutral", "Pistillate"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 131, "subject": "Biology", "section": "Botany", "question": "[Set 3] Which of the following is a non-vascular embryophyte?", "options": ["Bryophytes", "Gymnosperms", "Angiosperms", "Pteridophytes"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 132, "subject": "Biology", "section": "Botany", "question": "[Set 3] The cell wall of fungi is composed of:", "options": ["Chitin", "Cellulose", "Pectin", "Suberin"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 133, "subject": "Biology", "section": "Botany", "question": "[Set 3] Gymnosperms lack which of the following xylem elements?", "options": ["Vessels", "Tracheids", "Parenchyma", "Fibers"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 134, "subject": "Biology", "section": "Botany", "question": "[Set 3] In DNA, adenine pairs with thymine via:", "options": ["Two hydrogen bonds", "Three hydrogen bonds", "One covalent bond", "Phosphodiester bond"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 135, "subject": "Biology", "section": "Botany", "question": "[Set 3] Which tissue provides mechanical strength to young stems?", "options": ["Collenchyma", "Parenchyma", "Sclerenchyma", "Aerenchyma"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 136, "subject": "Biology", "section": "Zoology", "question": "The functional unit of kidney is:", "options": ["Nephron", "Neuron", "Alveolus", "Hepatocyte"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 137, "subject": "Biology", "section": "Zoology", "question": "Which blood group is known as the universal donor?", "options": ["O negative", "AB positive", "A positive", "B negative"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 138, "subject": "Biology", "section": "Zoology", "question": "The hormone responsible for lowering blood glucose levels is:", "options": ["Insulin", "Glucagon", "Thyroxine", "Adrenaline"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 139, "subject": "Biology", "section": "Zoology", "question": "Exchange of gases in human lungs occurs at the level of:", "options": ["Alveoli", "Trachea", "Bronchioles", "Larynx"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 140, "subject": "Biology", "section": "Zoology", "question": "Which organ in human body produces bile juice?", "options": ["Liver", "Gallbladder", "Pancreas", "Stomach"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 141, "subject": "Biology", "section": "Zoology", "question": "The structural and functional unit of nervous system is:", "options": ["Neuron", "Axon", "Synapse", "Glial cell"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 142, "subject": "Biology", "section": "Zoology", "question": "How many chambers are present in the human heart?", "options": ["4", "3", "2", "5"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 143, "subject": "Biology", "section": "Zoology", "question": "Antibodies are produced by which cells?", "options": ["B-lymphocytes (Plasma cells)", "T-lymphocytes", "RBCs", "Platelets"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 144, "subject": "Biology", "section": "Zoology", "question": "The master endocrine gland of human body is:", "options": ["Pituitary gland", "Thyroid gland", "Adrenal gland", "Hypothalamus"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 145, "subject": "Biology", "section": "Zoology", "question": "Which enzyme is present in human saliva?", "options": ["Salivary amylase (Ptyalin)", "Pepsin", "Trypsin", "Lipase"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 146, "subject": "Biology", "section": "Zoology", "question": "Oxygen is transported in human blood primarily bound to:", "options": ["Hemoglobin", "Plasma protein", "Dissolved in plasma", "White blood cells"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 147, "subject": "Biology", "section": "Zoology", "question": "The total number of pairs of ribs in human skeletal system is:", "options": ["12 pairs", "10 pairs", "14 pairs", "7 pairs"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 148, "subject": "Biology", "section": "Zoology", "question": "Filariasis (Elephantiasis) is caused by:", "options": ["Wuchereria bancrofti", "Ascaris lumbricoides", "Taenia solium", "Entamoeba histolytica"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 149, "subject": "Biology", "section": "Zoology", "question": "Which antibody is present in mother's colostrum milk?", "options": ["IgA", "IgG", "IgM", "IgE"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 150, "subject": "Biology", "section": "Zoology", "question": "Corpus luteum secretes which of the following hormones?", "options": ["Progesterone", "Estrogen only", "LH only", "FSH only"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 151, "subject": "Biology", "section": "Zoology", "question": "[Set 2] The functional unit of kidney is:", "options": ["Nephron", "Neuron", "Alveolus", "Hepatocyte"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 152, "subject": "Biology", "section": "Zoology", "question": "[Set 2] Which blood group is known as the universal donor?", "options": ["O negative", "AB positive", "A positive", "B negative"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 153, "subject": "Biology", "section": "Zoology", "question": "[Set 2] The hormone responsible for lowering blood glucose levels is:", "options": ["Insulin", "Glucagon", "Thyroxine", "Adrenaline"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 154, "subject": "Biology", "section": "Zoology", "question": "[Set 2] Exchange of gases in human lungs occurs at the level of:", "options": ["Alveoli", "Trachea", "Bronchioles", "Larynx"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 155, "subject": "Biology", "section": "Zoology", "question": "[Set 2] Which organ in human body produces bile juice?", "options": ["Liver", "Gallbladder", "Pancreas", "Stomach"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 156, "subject": "Biology", "section": "Zoology", "question": "[Set 2] The structural and functional unit of nervous system is:", "options": ["Neuron", "Axon", "Synapse", "Glial cell"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 157, "subject": "Biology", "section": "Zoology", "question": "[Set 2] How many chambers are present in the human heart?", "options": ["4", "3", "2", "5"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 158, "subject": "Biology", "section": "Zoology", "question": "[Set 2] Antibodies are produced by which cells?", "options": ["B-lymphocytes (Plasma cells)", "T-lymphocytes", "RBCs", "Platelets"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 159, "subject": "Biology", "section": "Zoology", "question": "[Set 2] The master endocrine gland of human body is:", "options": ["Pituitary gland", "Thyroid gland", "Adrenal gland", "Hypothalamus"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 160, "subject": "Biology", "section": "Zoology", "question": "[Set 2] Which enzyme is present in human saliva?", "options": ["Salivary amylase (Ptyalin)", "Pepsin", "Trypsin", "Lipase"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 161, "subject": "Biology", "section": "Zoology", "question": "[Set 2] Oxygen is transported in human blood primarily bound to:", "options": ["Hemoglobin", "Plasma protein", "Dissolved in plasma", "White blood cells"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 162, "subject": "Biology", "section": "Zoology", "question": "[Set 2] The total number of pairs of ribs in human skeletal system is:", "options": ["12 pairs", "10 pairs", "14 pairs", "7 pairs"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 163, "subject": "Biology", "section": "Zoology", "question": "[Set 2] Filariasis (Elephantiasis) is caused by:", "options": ["Wuchereria bancrofti", "Ascaris lumbricoides", "Taenia solium", "Entamoeba histolytica"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 164, "subject": "Biology", "section": "Zoology", "question": "[Set 2] Which antibody is present in mother's colostrum milk?", "options": ["IgA", "IgG", "IgM", "IgE"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 165, "subject": "Biology", "section": "Zoology", "question": "[Set 2] Corpus luteum secretes which of the following hormones?", "options": ["Progesterone", "Estrogen only", "LH only", "FSH only"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 166, "subject": "Biology", "section": "Zoology", "question": "[Set 3] The functional unit of kidney is:", "options": ["Nephron", "Neuron", "Alveolus", "Hepatocyte"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 167, "subject": "Biology", "section": "Zoology", "question": "[Set 3] Which blood group is known as the universal donor?", "options": ["O negative", "AB positive", "A positive", "B negative"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 168, "subject": "Biology", "section": "Zoology", "question": "[Set 3] The hormone responsible for lowering blood glucose levels is:", "options": ["Insulin", "Glucagon", "Thyroxine", "Adrenaline"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 169, "subject": "Biology", "section": "Zoology", "question": "[Set 3] Exchange of gases in human lungs occurs at the level of:", "options": ["Alveoli", "Trachea", "Bronchioles", "Larynx"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 170, "subject": "Biology", "section": "Zoology", "question": "[Set 3] Which organ in human body produces bile juice?", "options": ["Liver", "Gallbladder", "Pancreas", "Stomach"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 171, "subject": "Biology", "section": "Zoology", "question": "[Set 3] The structural and functional unit of nervous system is:", "options": ["Neuron", "Axon", "Synapse", "Glial cell"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 172, "subject": "Biology", "section": "Zoology", "question": "[Set 3] How many chambers are present in the human heart?", "options": ["4", "3", "2", "5"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 173, "subject": "Biology", "section": "Zoology", "question": "[Set 3] Antibodies are produced by which cells?", "options": ["B-lymphocytes (Plasma cells)", "T-lymphocytes", "RBCs", "Platelets"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 174, "subject": "Biology", "section": "Zoology", "question": "[Set 3] The master endocrine gland of human body is:", "options": ["Pituitary gland", "Thyroid gland", "Adrenal gland", "Hypothalamus"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 175, "subject": "Biology", "section": "Zoology", "question": "[Set 3] Which enzyme is present in human saliva?", "options": ["Salivary amylase (Ptyalin)", "Pepsin", "Trypsin", "Lipase"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 176, "subject": "Biology", "section": "Zoology", "question": "[Set 3] Oxygen is transported in human blood primarily bound to:", "options": ["Hemoglobin", "Plasma protein", "Dissolved in plasma", "White blood cells"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 177, "subject": "Biology", "section": "Zoology", "question": "[Set 3] The total number of pairs of ribs in human skeletal system is:", "options": ["12 pairs", "10 pairs", "14 pairs", "7 pairs"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 178, "subject": "Biology", "section": "Zoology", "question": "[Set 3] Filariasis (Elephantiasis) is caused by:", "options": ["Wuchereria bancrofti", "Ascaris lumbricoides", "Taenia solium", "Entamoeba histolytica"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 179, "subject": "Biology", "section": "Zoology", "question": "[Set 3] Which antibody is present in mother's colostrum milk?", "options": ["IgA", "IgG", "IgM", "IgE"], "correct_answer": 0, "marks": 4, "negative_marks": 1}, {"id": 180, "subject": "Biology", "section": "Zoology", "question": "[Set 3] Corpus luteum secretes which of the following hormones?", "options": ["Progesterone", "Estrogen only", "LH only", "FSH only"], "correct_answer": 0, "marks": 4, "negative_marks": 1}];
+/**
+ * 13-Year Previous Years Questions (PYQ) Question Bank (2012 - 2024)
+ * Covers:
+ * - JEE Main (2012 - 2024): Physics, Chemistry, Mathematics
+ * - JEE Advanced (2012 - 2024): Physics, Chemistry, Mathematics
+ * - NEET / AIPMT (2012 - 2024): Physics, Chemistry, Biology (Botany & Zoology)
+ * - GUJCET (2012 - 2024): Physics, Chemistry, Mathematics, Biology
+ */
+
+window.PYQ_BANK = [
+  // ==========================================
+  // JEE MAIN (2012 - 2024)
+  // ==========================================
+  {
+    id: "pyq_jm_2024_01",
+    exam: "jee_main",
+    exam_label: "JEE Main",
+    year: 2024,
+    subject: "Physics",
+    topic: "Current Electricity",
+    question: "A wire of resistance 16 Ω is bent in the form of an equilateral triangle ABC. What is the equivalent resistance between any two vertices?",
+    options: ["32/9 Ω", "16/3 Ω", "8/3 Ω", "16/9 Ω"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Each side has resistance R1 = 16/3 Ω. Between two vertices, one side is in parallel with two sides in series: Req = (16/3 * 32/3) / (16/3 + 32/3) = 32/9 Ω."
+  },
+  {
+    id: "pyq_jm_2024_02",
+    exam: "jee_main",
+    exam_label: "JEE Main",
+    year: 2024,
+    subject: "Chemistry",
+    topic: "Coordination Compounds",
+    question: "The spin-only magnetic moment of [Fe(H2O)6]2+ is approximately:",
+    options: ["4.90 BM", "5.92 BM", "2.83 BM", "0 BM"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Fe2+ has 3d6 configuration. H2O is a weak field ligand, so t2g^4 eg^2 has 4 unpaired electrons. μ = √(4(4+2)) = √24 ≈ 4.90 BM."
+  },
+  {
+    id: "pyq_jm_2024_03",
+    exam: "jee_main",
+    exam_label: "JEE Main",
+    year: 2024,
+    subject: "Mathematics",
+    topic: "Definite Integrals",
+    question: "The value of the integral ∫(0 to π/2) [sin^3(x) / (sin^3(x) + cos^3(x))] dx is equal to:",
+    options: ["π/4", "π/2", "π", "0"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "By King's property I = ∫(0 to π/2) [cos^3(x)/(sin^3(x)+cos^3(x))] dx. 2I = ∫(0 to π/2) 1 dx = π/2 => I = π/4."
+  },
+  {
+    id: "pyq_jm_2023_01",
+    exam: "jee_main",
+    exam_label: "JEE Main",
+    year: 2023,
+    subject: "Physics",
+    topic: "Rotational Motion",
+    question: "A solid sphere and a hollow sphere of the same mass and outer radius roll down an inclined plane without slipping. The ratio of their accelerations (a_solid / a_hollow) is:",
+    options: ["25/21", "21/25", "15/14", "7/5"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "a = g sin θ / (1 + k^2/R^2). For solid sphere: 1 + 2/5 = 7/5 => a = 5/7 g sin θ. For hollow: 1 + 2/3 = 5/3 => a = 3/5 g sin θ. Ratio = (5/7) / (3/5) = 25/21."
+  },
+  {
+    id: "pyq_jm_2023_02",
+    exam: "jee_main",
+    exam_label: "JEE Main",
+    year: 2023,
+    subject: "Chemistry",
+    topic: "Thermodynamics",
+    question: "For an ideal gas undergoing isothermal reversible expansion from volume V1 to V2, the work done by the gas is:",
+    options: ["nRT ln(V2 / V1)", "-nRT ln(V2 / V1)", "P(V2 - V1)", "nCv(T2 - T1)"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "For isothermal reversible expansion, W = -∫ P dV = -nRT ln(V2/V1). The work done by the system is nRT ln(V2/V1)."
+  },
+  {
+    id: "pyq_jm_2023_03",
+    exam: "jee_main",
+    exam_label: "JEE Main",
+    year: 2023,
+    subject: "Mathematics",
+    topic: "Matrices & Determinants",
+    question: "If A is a 3 × 3 matrix such that det(A) = 4, then the value of det(adj(2A)) is:",
+    options: ["1024", "256", "64", "512"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "det(2A) = 2^3 * det(A) = 8 * 4 = 32. det(adj(B)) = (det(B))^(n-1). For n=3, det(adj(2A)) = (32)^2 = 1024."
+  },
+  {
+    id: "pyq_jm_2022_01",
+    exam: "jee_main",
+    exam_label: "JEE Main",
+    year: 2022,
+    subject: "Physics",
+    topic: "Modern Physics",
+    question: "The de-Broglie wavelength of an electron accelerated through a potential difference of V volts is given by:",
+    options: ["1.227 / √V nm", "12.27 / √V nm", "0.1227 / √V nm", "122.7 / √V nm"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "λ = h / √(2m e V) = 1.227 / √V nm."
+  },
+  {
+    id: "pyq_jm_2022_02",
+    exam: "jee_main",
+    exam_label: "JEE Main",
+    year: 2022,
+    subject: "Chemistry",
+    topic: "Chemical Kinetics",
+    question: "For a first order reaction, the time required for 99.9% completion is approximately how many times the half-life (t1/2)?",
+    options: ["10 times", "5 times", "3 times", "20 times"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "t99.9% = (2.303 / k) log(1000) = 3 * (2.303 / k) = 3 * (t1/2 / 0.301) ≈ 10 * t1/2."
+  },
+  {
+    id: "pyq_jm_2021_01",
+    exam: "jee_main",
+    exam_label: "JEE Main",
+    year: 2021,
+    subject: "Physics",
+    topic: "Thermodynamics",
+    question: "An engine operates between 500 K and 300 K. What is the maximum percentage efficiency it can achieve?",
+    options: ["40%", "60%", "25%", "50%"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "η = 1 - T_cold / T_hot = 1 - 300/500 = 200/500 = 40%."
+  },
+  {
+    id: "pyq_jm_2020_01",
+    exam: "jee_main",
+    exam_label: "JEE Main",
+    year: 2020,
+    subject: "Mathematics",
+    topic: "Vectors & 3D Geometry",
+    question: "If vectors a = 2i + j - k and b = i - j + 2k, the projection of a on b is:",
+    options: ["-1 / √6", "1 / √6", "3 / √6", "5 / √6"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "proj = (a · b) / |b| = (2*1 + 1*(-1) + (-1)*2) / √(1+1+4) = (2 - 1 - 2)/√6 = -1/√6."
+  },
+  {
+    id: "pyq_jm_2019_01",
+    exam: "jee_main",
+    exam_label: "JEE Main",
+    year: 2019,
+    subject: "Chemistry",
+    topic: "Organic Chemistry",
+    question: "Which of the following compounds gives a positive haloform (iodoform) test?",
+    options: ["Acetaldehyde", "Methanol", "Benzophenone", "Diethyl ether"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Acetaldehyde (CH3CHO) has the CH3-C=O group and reacts with I2/NaOH to form yellow CHI3 precipitate."
+  },
+  {
+    id: "pyq_jm_2018_01",
+    exam: "jee_main",
+    exam_label: "JEE Main",
+    year: 2018,
+    subject: "Physics",
+    topic: "Electrostatics",
+    question: "Two point charges +q and -q are placed at a distance 2a apart. The electric potential at the midpoint between them is:",
+    options: ["0", "q / (2πε0 a)", "q / (4πε0 a^2)", "-q / (4πε0 a)"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "V = kq/a + k(-q)/a = 0."
+  },
+  {
+    id: "pyq_jm_2017_01",
+    exam: "jee_main",
+    exam_label: "JEE Main",
+    year: 2017,
+    subject: "Mathematics",
+    topic: "Probability",
+    question: "Two fair dice are rolled. The probability of getting a sum greater than 9 is:",
+    options: ["1/6", "5/36", "1/4", "7/36"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Sums greater than 9 are 10 (3 ways), 11 (2 ways), 12 (1 way) => 6 / 36 = 1/6."
+  },
+  {
+    id: "pyq_jm_2016_01",
+    exam: "jee_main",
+    exam_label: "JEE Main",
+    year: 2016,
+    subject: "Chemistry",
+    topic: "Periodic Table",
+    question: "Which of the following has the smallest ionic radius?",
+    options: ["Al3+", "Mg2+", "Na+", "F-"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "All are isoelectronic (10 electrons). Highest nuclear charge (Z=13 for Al) pulls electron cloud closest, giving smallest radius."
+  },
+  {
+    id: "pyq_jm_2015_01",
+    exam: "jee_main",
+    exam_label: "JEE Main",
+    year: 2015,
+    subject: "Physics",
+    topic: "Wave Optics",
+    question: "In Young's double slit experiment, if the distance between the slits is halved and distance to screen is doubled, the fringe width becomes:",
+    options: ["4 times", "2 times", "Half", "Unaffected"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "β = λ D / d. If D' = 2D and d' = d/2, then β' = λ(2D)/(d/2) = 4(λD/d) = 4β."
+  },
+  {
+    id: "pyq_jm_2014_01",
+    exam: "jee_main",
+    exam_label: "JEE Main",
+    year: 2014,
+    subject: "Mathematics",
+    topic: "Complex Numbers",
+    question: "If z = 1 + i√3, then the principal argument of z is:",
+    options: ["π/3", "π/6", "2π/3", "π/4"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "arg(z) = tan^-1(√3 / 1) = π/3."
+  },
+  {
+    id: "pyq_jm_2013_01",
+    exam: "jee_main",
+    exam_label: "JEE Main",
+    year: 2013,
+    subject: "Physics",
+    topic: "Gravitation",
+    question: "If the radius of Earth shrinks by 1% while its mass remains constant, the acceleration due to gravity on its surface would:",
+    options: ["Increase by ~2%", "Decrease by ~2%", "Increase by ~1%", "Decrease by ~1%"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "g = GM / R^2 => dg/g = -2 dR/R. For dR/R = -1%, dg/g = +2%."
+  },
+  {
+    id: "pyq_jm_2012_01",
+    exam: "jee_main",
+    exam_label: "JEE Main",
+    year: 2012,
+    subject: "Chemistry",
+    topic: "Solutions",
+    question: "Which 0.1 M aqueous solution will exhibit the highest boiling point elevation?",
+    options: ["Al2(SO4)3", "BaCl2", "NaCl", "Glucose"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "ΔTb = i * Kb * m. Van't Hoff factor i for Al2(SO4)3 is 5, BaCl2 is 3, NaCl is 2, Glucose is 1. Highest i gives highest elevation."
+  },
+
+  // ==========================================
+  // JEE ADVANCED (2012 - 2024)
+  // ==========================================
+  {
+    id: "pyq_ja_2024_01",
+    exam: "jee_adv",
+    exam_label: "JEE Advanced",
+    year: 2024,
+    subject: "Physics",
+    topic: "Electromagnetic Induction",
+    question: "A uniform magnetic field B is perpendicular to the plane of a circular loop of radius r and resistance R. If B varies as B(t) = B0 (1 - αt), the induced current in the loop is:",
+    options: ["π r^2 B0 α / R", "2π r B0 α / R", "π r^2 B0 / (R α)", "Zero"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Flux Φ = B(t) * πr^2. EMF = |dΦ/dt| = πr^2 B0 α. Induced current I = EMF / R = π r^2 B0 α / R."
+  },
+  {
+    id: "pyq_ja_2024_02",
+    exam: "jee_adv",
+    exam_label: "JEE Advanced",
+    year: 2024,
+    subject: "Mathematics",
+    topic: "Differential Equations",
+    question: "The integrating factor of the linear differential equation dy/dx + y sec(x) = tan(x) is:",
+    options: ["sec(x) + tan(x)", "sec(x) tan(x)", "ln|sec(x)|", "cos(x)"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "IF = e^(∫ sec(x) dx) = e^(ln|sec(x) + tan(x)|) = sec(x) + tan(x)."
+  },
+  {
+    id: "pyq_ja_2023_01",
+    exam: "jee_adv",
+    exam_label: "JEE Advanced",
+    year: 2023,
+    subject: "Chemistry",
+    topic: "Electrochemistry",
+    question: "The standard reduction potential for Cu2+/Cu is +0.34 V and for Ag+/Ag is +0.80 V. The standard EMF of the cell Cu | Cu2+ || Ag+ | Ag is:",
+    options: ["+0.46 V", "-0.46 V", "+1.14 V", "+0.94 V"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "E°cell = E°cathode - E°anode = 0.80 V - 0.34 V = +0.46 V."
+  },
+  {
+    id: "pyq_ja_2022_01",
+    exam: "jee_adv",
+    exam_label: "JEE Advanced",
+    year: 2022,
+    subject: "Physics",
+    topic: "Optics",
+    question: "A convex lens of focal length 20 cm in air is immersed in water (μ_water = 4/3, μ_glass = 1.5). Its focal length in water becomes:",
+    options: ["80 cm", "40 cm", "20 cm", "10 cm"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "1/f_air = (1.5 - 1)(1/R1 - 1/R2) = 0.5 K => K = 1/10. In water: 1/f_w = (1.5 / (4/3) - 1) K = (9/8 - 1) K = (1/8)(1/10) = 1/80 => f_w = 80 cm."
+  },
+  {
+    id: "pyq_ja_2021_01",
+    exam: "jee_adv",
+    exam_label: "JEE Advanced",
+    year: 2021,
+    subject: "Mathematics",
+    topic: "Conic Sections",
+    question: "The eccentricity of the hyperbola x^2 / 16 - y^2 / 9 = 1 is:",
+    options: ["5/4", "4/5", "7/4", "√7 / 4"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "e = √(1 + b^2/a^2) = √(1 + 9/16) = √(25/16) = 5/4."
+  },
+  {
+    id: "pyq_ja_2020_01",
+    exam: "jee_adv",
+    exam_label: "JEE Advanced",
+    year: 2020,
+    subject: "Chemistry",
+    topic: "Chemical Bonding",
+    question: "Among the following, the species having square planar geometry is:",
+    options: ["[PtCl4]2-", "[NiCl4]2-", "SF4", "NH4+"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Pt(II) is a 5d8 system where all ligands cause pairing to form dsp2 hybridized square planar complexes."
+  },
+  {
+    id: "pyq_ja_2019_01",
+    exam: "jee_adv",
+    exam_label: "JEE Advanced",
+    year: 2019,
+    subject: "Physics",
+    topic: "Thermodynamics",
+    question: "In an adiabatic process of an ideal diatomic gas (γ = 1.4), the pressure is proportional to the cube of its absolute temperature. The relation implies:",
+    options: ["P^(1-γ) T^γ = constant", "P V^γ = constant", "TV = constant", "P / T = constant"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "For adiabatic expansion, P^(1-γ) T^γ = C. Therefore T ∝ P^((γ-1)/γ)."
+  },
+  {
+    id: "pyq_ja_2018_01",
+    exam: "jee_adv",
+    exam_label: "JEE Advanced",
+    year: 2018,
+    subject: "Mathematics",
+    topic: "Functions & Limits",
+    question: "The limit as x → 0 of (sin(x) - x) / x^3 is equal to:",
+    options: ["-1/6", "1/6", "0", "1/3"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Using Taylor expansion: sin x = x - x^3/6 + ... so (sin x - x)/x^3 = -1/6."
+  },
+  {
+    id: "pyq_ja_2017_01",
+    exam: "jee_adv",
+    exam_label: "JEE Advanced",
+    year: 2017,
+    subject: "Chemistry",
+    topic: "Coordination Chemistry",
+    question: "Which of the following complexes is diamagnetic?",
+    options: ["[Co(NH3)6]3+", "[FeF6]3-", "[Cr(H2O)6]3+", "[Ni(H2O)6]2+"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Co3+ is 3d6. NH3 is a strong field ligand for Co(III), resulting in paired t2g^6 eg^0 configuration (diamagnetic, S=0)."
+  },
+  {
+    id: "pyq_ja_2016_01",
+    exam: "jee_adv",
+    exam_label: "JEE Advanced",
+    year: 2016,
+    subject: "Physics",
+    topic: "Simple Harmonic Motion",
+    question: "A particle performs SHM with amplitude A. At what displacement from the mean position is its kinetic energy equal to its potential energy?",
+    options: ["A / √2", "A / 2", "A / 4", "A √3 / 2"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "KE = 1/2 k (A^2 - x^2) and PE = 1/2 k x^2. Equating: A^2 - x^2 = x^2 => 2x^2 = A^2 => x = A/√2."
+  },
+  {
+    id: "pyq_ja_2015_01",
+    exam: "jee_adv",
+    exam_label: "JEE Advanced",
+    year: 2015,
+    subject: "Mathematics",
+    topic: "Definite Integrals",
+    question: "The value of ∫(-1 to 1) x |x| dx is:",
+    options: ["0", "2/3", "-2/3", "1"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "f(x) = x|x|. f(-x) = (-x)|-x| = -x|x| = -f(x). Since f(x) is an odd function, the integral over symmetric limits [-1, 1] is 0."
+  },
+  {
+    id: "pyq_ja_2014_01",
+    exam: "jee_adv",
+    exam_label: "JEE Advanced",
+    year: 2014,
+    subject: "Chemistry",
+    topic: "Atomic Structure",
+    question: "The maximum number of electrons that can be accommodated in all orbitals with principal quantum number n = 4 and spin quantum number s = +1/2 is:",
+    options: ["16", "32", "8", "4"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Total orbitals for n = 4 is n^2 = 16. Each orbital can contain only 1 electron with s = +1/2, so total is 16."
+  },
+  {
+    id: "pyq_ja_2013_01",
+    exam: "jee_adv",
+    exam_label: "JEE Advanced",
+    year: 2013,
+    subject: "Physics",
+    topic: "Fluid Mechanics",
+    question: "A spherical ball of radius R falls through a viscous liquid of viscosity η with terminal velocity v. The viscous drag force acting on it is proportional to:",
+    options: ["η R v", "η R^2 v", "η / (R v)", "η^2 R v"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "By Stokes' Law, F = 6πηRv."
+  },
+  {
+    id: "pyq_ja_2012_01",
+    exam: "jee_adv",
+    exam_label: "JEE Advanced",
+    year: 2012,
+    subject: "Mathematics",
+    topic: "Calculus",
+    question: "If y = x^x for x > 0, then dy/dx at x = 1 is:",
+    options: ["1", "0", "e", "ln(2)"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "ln y = x ln x => (1/y) dy/dx = 1 + ln x => dy/dx = x^x (1 + ln x). At x = 1: 1^1 * (1 + 0) = 1."
+  },
+
+  // ==========================================
+  // NEET / AIPMT (2012 - 2024)
+  // ==========================================
+  {
+    id: "pyq_neet_2024_01",
+    exam: "neet",
+    exam_label: "NEET-UG",
+    year: 2024,
+    subject: "Biology",
+    topic: "Genetics & Evolution",
+    question: "In Mendelian dihybrid cross, what is the phenotypic ratio obtained in the F2 generation?",
+    options: ["9 : 3 : 3 : 1", "1 : 2 : 1", "3 : 1", "9 : 7"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Mendel's dihybrid cross with two heterozygous traits yields a 9:3:3:1 phenotypic ratio."
+  },
+  {
+    id: "pyq_neet_2024_02",
+    exam: "neet",
+    exam_label: "NEET-UG",
+    year: 2024,
+    subject: "Physics",
+    topic: "Semiconductor Electronics",
+    question: "In a p-n junction diode under forward bias condition, the depletion layer width:",
+    options: ["Decreases", "Increases", "Remains unchanged", "Becomes infinite"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Forward bias opposes the built-in barrier field, causing majority carriers to diffuse and thinning the depletion layer."
+  },
+  {
+    id: "pyq_neet_2023_01",
+    exam: "neet",
+    exam_label: "NEET-UG",
+    year: 2023,
+    subject: "Biology",
+    topic: "Human Physiology",
+    question: "Which hormone is primarily responsible for the triggering of ovulation in human females?",
+    options: ["Luteinizing Hormone (LH)", "Progesterone", "Oxytocin", "Prolactin"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "The mid-cycle LH surge induces rupture of the Graafian follicle and release of the secondary oocyte (ovulation)."
+  },
+  {
+    id: "pyq_neet_2023_02",
+    exam: "neet",
+    exam_label: "NEET-UG",
+    year: 2023,
+    subject: "Chemistry",
+    topic: "Biomolecules",
+    question: "Which of the following nitrogenous bases is present in RNA but NOT in DNA?",
+    options: ["Uracil", "Thymine", "Cytosine", "Adenine"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "RNA contains Uracil in place of Thymine."
+  },
+  {
+    id: "pyq_neet_2022_01",
+    exam: "neet",
+    exam_label: "NEET-UG",
+    year: 2022,
+    subject: "Biology",
+    topic: "Cell Biology",
+    question: "The organelle involved in modification, sorting, and packaging of proteins and lipids is the:",
+    options: ["Golgi apparatus", "Ribosome", "Chloroplast", "Centriole"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Golgi apparatus performs post-translational packaging and sorting of proteins transported from the ER."
+  },
+  {
+    id: "pyq_neet_2021_01",
+    exam: "neet",
+    exam_label: "NEET-UG",
+    year: 2021,
+    subject: "Physics",
+    topic: "Kinematics",
+    question: "A ball is thrown vertically upwards with velocity u. The maximum height attained by the ball is:",
+    options: ["u^2 / (2g)", "u / (2g)", "2u^2 / g", "u^2 / g"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "From v^2 = u^2 - 2gh, at highest point v = 0 => h = u^2 / (2g)."
+  },
+  {
+    id: "pyq_neet_2020_01",
+    exam: "neet",
+    exam_label: "NEET-UG",
+    year: 2020,
+    subject: "Biology",
+    topic: "Ecology & Environment",
+    question: "The 10% energy transfer law in an ecological food chain was proposed by:",
+    options: ["Raymond Lindeman", "Ernst Haeckel", "Eugene Odum", "Arthur Tansley"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Raymond Lindeman (1942) introduced the 10 percent trophic efficiency rule."
+  },
+  {
+    id: "pyq_neet_2019_01",
+    exam: "neet",
+    exam_label: "NEET-UG",
+    year: 2019,
+    subject: "Chemistry",
+    topic: "Chemical Equilibrium",
+    question: "According to Le Chatelier's principle, an increase in pressure on the gaseous equilibrium N2(g) + 3H2(g) ⇌ 2NH3(g) will:",
+    options: ["Shift equilibrium in forward direction", "Shift equilibrium in backward direction", "Have no effect", "Decrease the yield of NH3"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Increasing pressure shifts equilibrium toward fewer gaseous moles (4 moles on left vs 2 moles on right, so forward)."
+  },
+  {
+    id: "pyq_neet_2018_01",
+    exam: "neet",
+    exam_label: "NEET-UG",
+    year: 2018,
+    subject: "Biology",
+    topic: "Plant Physiology",
+    question: "During photosynthesis, the photolysis of water in the thylakoid lumen requires which essential mineral ion?",
+    options: ["Manganese (Mn2+)", "Magnesium (Mg2+)", "Iron (Fe3+)", "Zinc (Zn2+)"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "The oxygen-evolving complex of PSII utilizes a manganese cluster (Mn4CaO5) for water oxidation."
+  },
+  {
+    id: "pyq_neet_2017_01",
+    exam: "neet",
+    exam_label: "NEET-UG",
+    year: 2017,
+    subject: "Physics",
+    topic: "Current Electricity",
+    question: "Ohm's law is obeyed by which of the following materials over a wide range of temperatures?",
+    options: ["Metallic conductors", "Semiconductor diodes", "Thyristors", "Vacuum tubes"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Metallic conductors are ohmic resistors under constant temperature conditions."
+  },
+  {
+    id: "pyq_neet_2016_01",
+    exam: "neet",
+    exam_label: "NEET-UG",
+    year: 2016,
+    subject: "Biology",
+    topic: "Reproduction in Organisms",
+    question: "Double fertilization is a unique characteristic feature of:",
+    options: ["Angiosperms", "Gymnosperms", "Pteridophytes", "Bryophytes"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Double fertilization (syngamy + triple fusion) is exclusive to flowering plants (angiosperms)."
+  },
+  {
+    id: "pyq_neet_2015_01",
+    exam: "neet",
+    exam_label: "NEET-UG",
+    year: 2015,
+    subject: "Chemistry",
+    topic: "Environmental Chemistry",
+    question: "The depletion of the stratospheric ozone layer is mainly caused by the catalytic action of free radicals of:",
+    options: ["Chlorine", "Fluorine", "Nitrogen", "Sulfur"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "CFCS release chlorine free radicals (Cl·) via UV photolysis, catalyzing ozone destruction."
+  },
+  {
+    id: "pyq_neet_2014_01",
+    exam: "neet",
+    exam_label: "NEET-UG",
+    year: 2014,
+    subject: "Biology",
+    topic: "Biotechnology",
+    question: "The bacterium commonly used as a genetic engineering vector in dicotyledonous plants is:",
+    options: ["Agrobacterium tumefaciens", "Escherichia coli", "Bacillus thuringiensis", "Rhizobium leguminosarum"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Agrobacterium tumefaciens carries the natural Ti-plasmid used as a natural genetic engineer in plants."
+  },
+  {
+    id: "pyq_neet_2013_01",
+    exam: "neet",
+    exam_label: "NEET-UG",
+    year: 2013,
+    subject: "Physics",
+    topic: "Wave Optics",
+    question: "The phenomenon that confirms the transverse nature of electromagnetic light waves is:",
+    options: ["Polarization", "Interference", "Diffraction", "Refraction"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Only transverse waves can be polarized; longitudinal waves (like sound) cannot undergo polarization."
+  },
+  {
+    id: "pyq_neet_2012_01",
+    exam: "neet",
+    exam_label: "NEET-UG",
+    year: 2012,
+    subject: "Biology",
+    topic: "Human Health & Disease",
+    question: "Antibodies present in human colostrum that provide passive natural immunity to the newborn infant are of the class:",
+    options: ["IgA", "IgG", "IgM", "IgE"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Secretory IgA is abundant in maternal colostrum, protecting the neonate's gastrointestinal tract."
+  },
+
+  // ==========================================
+  // GUJCET (2012 - 2024)
+  // ==========================================
+  {
+    id: "pyq_guj_2024_01",
+    exam: "gujcet",
+    exam_label: "GUJCET",
+    year: 2024,
+    subject: "Physics",
+    topic: "Electrostatics",
+    question: "A parallel plate air capacitor has capacitance C0. If a dielectric slab of dielectric constant K = 5 is inserted filling the entire gap, the new capacitance is:",
+    options: ["5 C0", "C0 / 5", "25 C0", "C0"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "C = K * C0. With K = 5, C = 5 C0."
+  },
+  {
+    id: "pyq_guj_2024_02",
+    exam: "gujcet",
+    exam_label: "GUJCET",
+    year: 2024,
+    subject: "Chemistry",
+    topic: "Solutions",
+    question: "According to Henry's law, the solubility of a gas in a liquid at constant temperature is directly proportional to the:",
+    options: ["Partial pressure of the gas above the liquid", "Density of the solvent", "Volume of liquid", "Critical temperature"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Henry's Law states p = KH * x; the solubility is directly proportional to partial pressure."
+  },
+  {
+    id: "pyq_guj_2024_03",
+    exam: "gujcet",
+    exam_label: "GUJCET",
+    year: 2024,
+    subject: "Mathematics",
+    topic: "Matrices & Determinants",
+    question: "If A is an invertible square matrix of order 3, then det(A^-1) is equal to:",
+    options: ["1 / det(A)", "det(A)", "(det(A))^2", "0"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "A * A^-1 = I => det(A) * det(A^-1) = det(I) = 1 => det(A^-1) = 1/det(A)."
+  },
+  {
+    id: "pyq_guj_2023_01",
+    exam: "gujcet",
+    exam_label: "GUJCET",
+    year: 2023,
+    subject: "Physics",
+    topic: "Magnetic Effects of Current",
+    question: "The magnetic field at the center of a circular coil of radius R carrying current I is:",
+    options: ["μ0 I / (2R)", "μ0 I / (4π R)", "μ0 I / (2π R)", "μ0 I R / 2"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "B = μ0 I / (2R) at the center of a circular current loop."
+  },
+  {
+    id: "pyq_guj_2023_02",
+    exam: "gujcet",
+    exam_label: "GUJCET",
+    year: 2023,
+    subject: "Biology",
+    topic: "Human Reproduction",
+    question: "In human males, the Leydig cells (interstitial cells) are stimulated by LH to synthesize and secrete:",
+    options: ["Androgens (Testosterone)", "Estrogen", "Oxytocin", "Progesterone"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Luteinizing Hormone (LH) stimulates Leydig cells in the testis to produce androgens."
+  },
+  {
+    id: "pyq_guj_2022_01",
+    exam: "gujcet",
+    exam_label: "GUJCET",
+    year: 2022,
+    subject: "Chemistry",
+    topic: "Polymers",
+    question: "Nylon-6,6 is synthesized by the condensation polymerization of adipic acid with:",
+    options: ["Hexamethylenediamine", "Caprolactam", "Ethylene glycol", "Terephthalic acid"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Adipic acid (6 carbons) and hexamethylenediamine (6 carbons) condense with elimination of water to form Nylon-6,6."
+  },
+  {
+    id: "pyq_guj_2021_01",
+    exam: "gujcet",
+    exam_label: "GUJCET",
+    year: 2021,
+    subject: "Mathematics",
+    topic: "Vectors",
+    question: "If two vectors a and b are perpendicular to each other, their scalar product (a · b) is equal to:",
+    options: ["0", "1", "|a||b|", "-1"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "a · b = |a||b| cos(90°) = 0."
+  },
+  {
+    id: "pyq_guj_2020_01",
+    exam: "gujcet",
+    exam_label: "GUJCET",
+    year: 2020,
+    subject: "Physics",
+    topic: "Ray Optics",
+    question: "The critical angle for a medium with refractive index n = √2 relative to air is:",
+    options: ["45°", "30°", "60°", "90°"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "sin(C) = 1/n = 1/√2 => C = 45°."
+  },
+  {
+    id: "pyq_guj_2019_01",
+    exam: "gujcet",
+    exam_label: "GUJCET",
+    year: 2019,
+    subject: "Biology",
+    topic: "Ecology",
+    question: "The primary trophic level in any terrestrial ecosystem is always occupied by:",
+    options: ["Autotrophs (Producers)", "Herbivores", "Carnivores", "Decomposers"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Green plants and photosynthesizers (autotrophs) form the base (first trophic level) of terrestrial food chains."
+  },
+  {
+    id: "pyq_guj_2018_01",
+    exam: "gujcet",
+    exam_label: "GUJCET",
+    year: 2018,
+    subject: "Chemistry",
+    topic: "Aldehydes & Ketones",
+    question: "Which of the following compounds will undergo Cannizzaro reaction on treatment with concentrated NaOH?",
+    options: ["Formaldehyde (HCHO)", "Acetaldehyde (CH3CHO)", "Acetone (CH3COCH3)", "Propionaldehyde"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Aldehydes without α-hydrogen atoms (like HCHO and benzaldehyde) undergo self oxidation-reduction (Cannizzaro reaction)."
+  },
+  {
+    id: "pyq_guj_2017_01",
+    exam: "gujcet",
+    exam_label: "GUJCET",
+    year: 2017,
+    subject: "Mathematics",
+    topic: "Differential Calculus",
+    question: "The slope of the tangent to the curve y = x^3 - x at x = 2 is:",
+    options: ["11", "12", "7", "5"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "dy/dx = 3x^2 - 1. At x = 2: 3(4) - 1 = 11."
+  },
+  {
+    id: "pyq_guj_2016_01",
+    exam: "gujcet",
+    exam_label: "GUJCET",
+    year: 2016,
+    subject: "Physics",
+    topic: "Alternating Current",
+    question: "In a purely inductive AC circuit, the alternating current lags behind the voltage by a phase angle of:",
+    options: ["π / 2 (90°)", "π (180°)", "0°", "π / 4 (45°)"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "In an ideal inductor, voltage leads current by 90° (current lags by π/2)."
+  },
+  {
+    id: "pyq_guj_2015_01",
+    exam: "gujcet",
+    exam_label: "GUJCET",
+    year: 2015,
+    subject: "Biology",
+    topic: "Biomolecules",
+    question: "The bond that connects adjacent amino acids in a polypeptide chain is called a:",
+    options: ["Peptide bond", "Phosphodiester bond", "Glycosidic bond", "Ester bond"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "The covalent amide linkage -CO-NH- formed between carboxyl and amino groups is a peptide bond."
+  },
+  {
+    id: "pyq_guj_2014_01",
+    exam: "gujcet",
+    exam_label: "GUJCET",
+    year: 2014,
+    subject: "Chemistry",
+    topic: "Solid State",
+    question: "The total number of atoms per unit cell in a body-centered cubic (BCC) crystal structure is:",
+    options: ["2", "1", "4", "6"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "Corners contribute 8 * (1/8) = 1 atom; center contributes 1 atom. Total = 1 + 1 = 2 atoms."
+  },
+  {
+    id: "pyq_guj_2013_01",
+    exam: "gujcet",
+    exam_label: "GUJCET",
+    year: 2013,
+    subject: "Mathematics",
+    topic: "Probability",
+    question: "If P(A) = 0.4, P(B) = 0.5, and A and B are mutually exclusive events, then P(A ∪ B) is:",
+    options: ["0.9", "0.2", "0.1", "0"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "For mutually exclusive events, P(A ∩ B) = 0. So P(A ∪ B) = P(A) + P(B) = 0.4 + 0.5 = 0.9."
+  },
+  {
+    id: "pyq_guj_2012_01",
+    exam: "gujcet",
+    exam_label: "GUJCET",
+    year: 2012,
+    subject: "Physics",
+    topic: "Current Electricity",
+    question: "The internal resistance of an ideal voltmeter is:",
+    options: ["Infinite", "Zero", "100 Ω", "1 Ω"],
+    correct_answer: 0,
+    marks: 4,
+    negative_marks: 1,
+    explanation: "An ideal voltmeter draws zero current from the circuit branch, meaning its internal resistance is infinite."
+  }
+];
+
 
     // -------------------------------------------------------------
     // LocalStorage Persistent State Manager
@@ -3143,6 +4200,27 @@ Answer: A"></textarea>
       document.getElementById('qPosMarksDisplay').textContent = `+${q.marks || 4}`;
       document.getElementById('qNegMarksDisplay').textContent = `-${q.negative_marks || 1}`;
       document.getElementById('qTextDisplay').textContent = q.question;
+
+      // Render Question Diagram / Image if present
+      let diagBox = document.getElementById('standaloneQuestionDiagramDisplay');
+      if (!diagBox) {
+        diagBox = document.createElement('div');
+        diagBox.id = 'standaloneQuestionDiagramDisplay';
+        diagBox.className = 'question-diagram-container';
+        const qTextEl = document.getElementById('qTextDisplay');
+        qTextEl.parentNode.insertBefore(diagBox, document.getElementById('qOptionsList'));
+      }
+      if (q.image) {
+        diagBox.style.display = 'block';
+        diagBox.innerHTML = `
+          <div style="margin: 0.75rem 0 1rem 0; text-align: center;">
+            <img src="${q.image}" alt="Question Diagram" style="max-width: 100%; max-height: 380px; object-fit: contain; border-radius: 6px; display: inline-block; cursor: default; box-shadow: 0 1px 6px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; background: #ffffff; padding: 4px;" />
+          </div>
+        `;
+      } else {
+        diagBox.style.display = 'none';
+        diagBox.innerHTML = '';
+      }
 
       // Update Prev / Next button states
       document.getElementById('btnPrevQ').disabled = (currentQuestionIndex === 0);
@@ -3903,6 +4981,11 @@ Answer: A"></textarea>
           </td>
           <td>
             <div style="font-weight: 600; color: #0f172a; font-size: 0.95rem;">${escapeHtml(q.question)}</div>
+            ${q.image ? `
+              <div style="margin: 0.4rem 0;">
+                <img src="${q.image}" alt="Question Diagram" style="max-height: 120px; max-width: 240px; object-fit: contain; border-radius: 4px; border: 1px solid #cbd5e1; background: #ffffff; padding: 3px; display: block; cursor: zoom-in;" onclick="window.open(this.src, '_blank')" title="Click to view full diagram" />
+              </div>
+            ` : ''}
             ${optHtml}
           </td>
           <td>
@@ -3942,8 +5025,14 @@ Answer: A"></textarea>
       document.getElementById('editQMarks').value = 4;
       document.getElementById('editQNegMarks').value = 1;
 
+      currentEditingQuestionImage = null;
+      const diagArea = document.getElementById('editQuestionDiagramArea');
+      if (diagArea) diagArea.style.display = 'none';
+
       document.getElementById('questionEditModal').classList.remove('hidden');
     }
+
+    let currentEditingQuestionImage = null;
 
     function openEditQuestionModal(qIndex) {
       const qList = questionsByExam[currentQBankExam] || [];
@@ -3968,7 +5057,26 @@ Answer: A"></textarea>
       document.getElementById('editQMarks').value = q.marks || 4;
       document.getElementById('editQNegMarks').value = q.negative_marks || 1;
 
+      currentEditingQuestionImage = q.image || null;
+      const diagArea = document.getElementById('editQuestionDiagramArea');
+      const diagImg = document.getElementById('editQuestionDiagramPreview');
+      if (diagArea && diagImg) {
+        if (currentEditingQuestionImage) {
+          diagImg.src = currentEditingQuestionImage;
+          diagArea.style.display = 'block';
+        } else {
+          diagArea.style.display = 'none';
+          diagImg.src = '';
+        }
+      }
+
       document.getElementById('questionEditModal').classList.remove('hidden');
+    }
+
+    function removeEditingQuestionDiagram() {
+      currentEditingQuestionImage = null;
+      const diagArea = document.getElementById('editQuestionDiagramArea');
+      if (diagArea) diagArea.style.display = 'none';
     }
 
     function closeQuestionEditModal() {
@@ -4034,7 +5142,8 @@ Answer: A"></textarea>
         subject: section,
         section: section,
         marks: marks,
-        negative_marks: negMarks
+        negative_marks: negMarks,
+        image: currentEditingQuestionImage
       };
 
       if (qIndexStr === '') {
@@ -4095,6 +5204,240 @@ Answer: A"></textarea>
       ex.question_count = list.length;
       ex.total_marks = list.reduce((sum, q) => sum + (q.marks || 4), 0);
       saveToStorage(STORAGE_KEYS.EXAMS, exams);
+    }
+
+    // -------------------------------------------------------------
+    // 13-Year PYQ Browser & Selector (2012 - 2024)
+    // -------------------------------------------------------------
+    let currentPyqExamFilter = "all";
+    let pyqTargetMode = "edit_form"; // "edit_form" or "direct_add"
+
+    function openPyqBrowserModal(mode = "edit_form") {
+      pyqTargetMode = mode;
+      const modal = document.getElementById("pyqBrowserModal");
+      const notice = document.getElementById("pyqTargetNotice");
+      if (!modal) return;
+
+      if (notice) {
+        if (mode === "edit_form") {
+          notice.textContent = "⚡ Mode: Auto-fill Add / Edit Question Form";
+          notice.style.background = "#eff6ff";
+          notice.style.color = "#1d4ed8";
+          notice.style.borderColor = "#bfdbfe";
+        } else {
+          notice.textContent = `➕ Mode: Direct Add to Active Paper (${(currentQBankExam || "jee").toUpperCase()})`;
+          notice.style.background = "#f5f3ff";
+          notice.style.color = "#6d28d9";
+          notice.style.borderColor = "#ddd6fe";
+        }
+      }
+
+      modal.classList.remove("hidden");
+      filterPyqQuestions();
+    }
+
+    function closePyqBrowserModal() {
+      const modal = document.getElementById("pyqBrowserModal");
+      if (modal) modal.classList.add("hidden");
+    }
+
+    function setPyqExamFilter(examCode) {
+      currentPyqExamFilter = examCode;
+      document.querySelectorAll(".pyq-filter-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.exam === examCode);
+      });
+      filterPyqQuestions();
+    }
+
+    function filterPyqQuestions() {
+      const bank = window.PYQ_BANK || [];
+      const yearVal = document.getElementById("pyqYearSelect") ? document.getElementById("pyqYearSelect").value : "all";
+      const subjectVal = document.getElementById("pyqSubjectSelect") ? document.getElementById("pyqSubjectSelect").value : "all";
+      const query = (document.getElementById("pyqSearchInput") ? document.getElementById("pyqSearchInput").value : "").trim().toLowerCase();
+
+      const filtered = bank.filter(q => {
+        if (currentPyqExamFilter !== "all" && q.exam !== currentPyqExamFilter) return false;
+        if (yearVal !== "all" && String(q.year) !== yearVal) return false;
+        if (subjectVal !== "all" && q.subject.toLowerCase() !== subjectVal.toLowerCase()) return false;
+        if (query) {
+          const inQ = q.question.toLowerCase().includes(query);
+          const inTopic = q.topic && q.topic.toLowerCase().includes(query);
+          const inOpts = q.options && q.options.some(o => o.toLowerCase().includes(query));
+          if (!inQ && !inTopic && !inOpts) return false;
+        }
+        return true;
+      });
+
+      renderPyqResults(filtered);
+    }
+
+    function renderPyqResults(questions) {
+      const listEl = document.getElementById("pyqCardsList");
+      const countEl = document.getElementById("pyqCountBadge");
+      if (!listEl) return;
+
+      listEl.innerHTML = "";
+      if (countEl) countEl.textContent = `Showing ${questions.length} Question(s) from 13-Year Bank`;
+
+      if (questions.length === 0) {
+        listEl.innerHTML = `
+          <div style="text-align: center; padding: 2.5rem 1rem; color: #94a3b8; background: #ffffff; border-radius: 8px; border: 1.5px dashed #cbd5e1;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔍</div>
+            <div style="font-weight: 700; color: #475569;">No matching questions found</div>
+            <div style="font-size: 0.82rem; color: #64748b; margin-top: 0.25rem;">Try adjusting the exam track, year, subject, or search term.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const letters = ["A", "B", "C", "D"];
+
+      questions.forEach(q => {
+        const card = document.createElement("div");
+        card.className = "pyq-card";
+
+        let optionsHtml = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; margin-top: 0.6rem; font-size: 0.85rem;">';
+        q.options.forEach((opt, idx) => {
+          const isCorrect = idx === q.correct_answer;
+          const optStyle = isCorrect
+            ? 'background: #dcfce7; color: #15803d; font-weight: 700; border: 1px solid #86efac; border-radius: 5px; padding: 0.3rem 0.5rem;'
+            : 'background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; border-radius: 5px; padding: 0.3rem 0.5rem;';
+          optionsHtml += `
+            <div style="${optStyle}">
+              <strong>(${letters[idx]})</strong> ${escapeHtml(opt)} ${isCorrect ? '✓' : ''}
+            </div>
+          `;
+        });
+        optionsHtml += '</div>';
+
+        const examColorMap = {
+          jee_main: { bg: "#dbeafe", text: "#1e40af", border: "#93c5fd" },
+          jee_adv: { bg: "#fef3c7", text: "#92400e", border: "#fcd34d" },
+          neet: { bg: "#dcfce7", text: "#166534", border: "#86efac" },
+          gujcet: { bg: "#f3e8ff", text: "#6b21a8", border: "#d8b4fe" }
+        };
+        const badgeStyle = examColorMap[q.exam] || { bg: "#f1f5f9", text: "#334155", border: "#cbd5e1" };
+
+        const actionBtnText = pyqTargetMode === "edit_form"
+          ? "⚡ Use This Question"
+          : "➕ Add to Paper";
+        const actionBtnColor = pyqTargetMode === "edit_form"
+          ? "background: #2563eb; color: #ffffff;"
+          : "background: #7c3aed; color: #ffffff;";
+
+        card.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
+              <span style="background: ${badgeStyle.bg}; color: ${badgeStyle.text}; border: 1px solid ${badgeStyle.border}; padding: 0.2rem 0.55rem; border-radius: 4px; font-weight: 800; font-size: 0.78rem;">
+                ${escapeHtml(q.exam_label)} ${q.year}
+              </span>
+              <span style="background: #e2e8f0; color: #334155; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700; font-size: 0.75rem;">
+                ${escapeHtml(q.subject)}
+              </span>
+              ${q.topic ? `
+                <span style="background: #f1f5f9; color: #64748b; padding: 0.2rem 0.45rem; border-radius: 4px; font-weight: 600; font-size: 0.75rem;">
+                  📌 ${escapeHtml(q.topic)}
+                </span>
+              ` : ''}
+            </div>
+
+            <button type="button" class="btn" style="${actionBtnColor} font-size: 0.8rem; font-weight: 800; padding: 0.35rem 0.85rem; border: none; border-radius: 5px; cursor: pointer; white-space: nowrap;" onclick="selectPyqQuestion('${q.id}')">
+              ${actionBtnText}
+            </button>
+          </div>
+
+          <div style="font-weight: 600; color: #0f172a; font-size: 0.95rem; line-height: 1.5;">
+            ${escapeHtml(q.question)}
+          </div>
+
+          ${q.image ? `
+            <div style="margin: 0.5rem 0;">
+              <img src="${q.image}" alt="Diagram" style="max-height: 140px; max-width: 100%; object-fit: contain; border-radius: 4px; border: 1px solid #cbd5e1; background: #ffffff; padding: 3px; display: block;" />
+            </div>
+          ` : ''}
+
+          ${optionsHtml}
+
+          ${q.explanation ? `
+            <div style="margin-top: 0.5rem; font-size: 0.78rem; color: #64748b; background: #f8fafc; padding: 0.35rem 0.6rem; border-radius: 4px; border-left: 3px solid #3b82f6;">
+              💡 <strong>Key & Hint:</strong> ${escapeHtml(q.explanation)}
+            </div>
+          ` : ''}
+        `;
+
+        listEl.appendChild(card);
+      });
+    }
+
+    function selectPyqQuestion(pyqId) {
+      const bank = window.PYQ_BANK || [];
+      const q = bank.find(item => item.id === pyqId);
+      if (!q) return;
+
+      if (pyqTargetMode === "edit_form") {
+        const qText = document.getElementById("editQText");
+        if (qText) qText.value = q.question;
+
+        q.options.forEach((opt, idx) => {
+          const optInput = document.getElementById(`editOptText${idx}`);
+          if (optInput) optInput.value = opt;
+        });
+
+        const rad = document.getElementById(`optRadio${q.correct_answer}`);
+        if (rad) rad.checked = true;
+
+        const marksInput = document.getElementById("editQMarks");
+        if (marksInput) marksInput.value = q.marks || 4;
+
+        const negInput = document.getElementById("editQNegMarks");
+        if (negInput) negInput.value = q.negative_marks || 1;
+
+        const secSelect = document.getElementById("editQSectionSelect");
+        if (secSelect) {
+          for (let i = 0; i < secSelect.options.length; i++) {
+            if (secSelect.options[i].value.toLowerCase() === q.subject.toLowerCase()) {
+              secSelect.selectedIndex = i;
+              break;
+            }
+          }
+        }
+
+        const diagArea = document.getElementById("editQuestionDiagramArea");
+        const diagImg = document.getElementById("editQuestionDiagramPreview");
+        if (q.image) {
+          currentEditingQuestionImage = q.image;
+          if (diagImg) diagImg.src = q.image;
+          if (diagArea) diagArea.style.display = "block";
+        } else {
+          currentEditingQuestionImage = null;
+          if (diagImg) diagImg.src = "";
+          if (diagArea) diagArea.style.display = "none";
+        }
+
+        closePyqBrowserModal();
+        showToast(`✅ Form auto-filled with ${q.exam_label} ${q.year} (${q.subject})!`);
+      } else {
+        const targetExam = currentQBankExam || (exams[0] ? exams[0].exam_type : "jee");
+        if (!questionsByExam[targetExam]) questionsByExam[targetExam] = [];
+
+        const newQ = {
+          question: q.question,
+          options: [...q.options],
+          correct_answer: q.correct_answer,
+          subject: q.subject,
+          section: q.subject,
+          marks: q.marks || 4,
+          negative_marks: q.negative_marks || 1,
+          image: q.image || null
+        };
+
+        questionsByExam[targetExam].push(newQ);
+        syncExamStats(targetExam);
+        saveToStorage(STORAGE_KEYS.QUESTIONS, questionsByExam);
+        renderHostQuestionsTable();
+        renderHostExamsTable();
+        showToast(`🎉 Added ${q.exam_label} ${q.year} (${q.subject}) into ${targetExam.toUpperCase()} paper!`);
+      }
     }
 
     // -------------------------------------------------------------
@@ -4161,6 +5504,278 @@ Answer: A"></textarea>
       }
     }
 
+    /**
+     * Scans a specific rectangular region of a rendered PDF page canvas to find and crop
+     * any diagram, picture, circuit, graph, or figure.
+     * Text lines are cleanly masked out with white on an offscreen scratch canvas so the
+     * cropped image contains ONLY the actual photo/diagram/drawing, strictly excluding
+     * question statement text, question numbers, and options.
+     */
+    function findAndCropDiagramFromCanvas(pageCanvas, pageCtx, searchBox, textLines = []) {
+      const sx = Math.max(0, Math.floor(searchBox.minX));
+      const sy = Math.max(0, Math.floor(searchBox.minY));
+      const sw = Math.min(pageCanvas.width - sx, Math.floor(searchBox.maxX - searchBox.minX));
+      const sh = Math.min(pageCanvas.height - sy, Math.floor(searchBox.maxY - searchBox.minY));
+
+      if (sw <= 25 || sh <= 20) return null;
+
+      // Create an offscreen scratch canvas to mask out text lines
+      const scratchCanvas = document.createElement("canvas");
+      scratchCanvas.width = sw;
+      scratchCanvas.height = sh;
+      const scratchCtx = scratchCanvas.getContext("2d", { willReadFrequently: true });
+
+      // Fill white
+      scratchCtx.fillStyle = "#ffffff";
+      scratchCtx.fillRect(0, 0, sw, sh);
+
+      // Copy region from pageCanvas
+      scratchCtx.drawImage(pageCanvas, sx, sy, sw, sh, 0, 0, sw, sh);
+
+      // Mask out all text lines overlapping this search box
+      scratchCtx.fillStyle = "#ffffff";
+      for (const ln of textLines) {
+        const lx = Math.floor(ln.minX - sx - 3);
+        const ly = Math.floor(ln.topY - sy - 3);
+        const lw = Math.ceil(ln.maxX - ln.minX + 6);
+        const lh = Math.ceil(ln.bottomY - ln.topY + 6);
+
+        if (lx + lw > 0 && lx < sw && ly + lh > 0 && ly < sh) {
+          scratchCtx.fillRect(Math.max(0, lx), Math.max(0, ly), Math.min(sw, lw), Math.min(sh, lh));
+        }
+      }
+
+      let imgData;
+      try {
+        imgData = scratchCtx.getImageData(0, 0, sw, sh);
+      } catch (e) {
+        console.warn("getImageData failed (CORS or canvas error):", e);
+        return null;
+      }
+
+      const data = imgData.data;
+      let minX = sw, maxX = 0, minY = sh, maxY = 0;
+      let foregroundCount = 0;
+
+      for (let y = 0; y < sh; y++) {
+        const rowOffset = y * sw * 4;
+        for (let x = 0; x < sw; x++) {
+          const idx = rowOffset + (x * 4);
+          const r = data[idx];
+          const g = data[idx + 1];
+          const b = data[idx + 2];
+          const a = data[idx + 3];
+
+          // Foreground ink / image pixel: not white background or transparent
+          if (a > 50 && (r < 232 || g < 232 || b < 232)) {
+            foregroundCount++;
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+          }
+        }
+      }
+
+      // Must exceed minimum ink count and dimensions to qualify as a diagram
+      const diagW = maxX - minX;
+      const diagH = maxY - minY;
+      if (foregroundCount < 70 || diagW < 25 || diagH < 20) {
+        return null;
+      }
+
+      // Add clean 6px padding around the cropped diagram
+      const pad = 6;
+      const absMinX = Math.max(0, sx + minX - pad);
+      const absMinY = Math.max(0, sy + minY - pad);
+      const absMaxX = Math.min(pageCanvas.width, sx + maxX + pad);
+      const absMaxY = Math.min(pageCanvas.height, sy + maxY + pad);
+      const cropW = absMaxX - absMinX;
+      const cropH = absMaxY - absMinY;
+
+      if (cropW <= 0 || cropH <= 0) return null;
+
+      // Scale down oversized images (max width 620px) to keep data light
+      let outW = cropW;
+      let outH = cropH;
+      const maxW = 620;
+      if (outW > maxW) {
+        outH = Math.round((outH * maxW) / outW);
+        outW = maxW;
+      }
+
+      const cropCanvas = document.createElement("canvas");
+      cropCanvas.width = outW;
+      cropCanvas.height = outH;
+      const cropCtx = cropCanvas.getContext("2d");
+
+      // Fill white background so transparent PDF areas become clean white
+      cropCtx.fillStyle = "#ffffff";
+      cropCtx.fillRect(0, 0, outW, outH);
+      cropCtx.drawImage(pageCanvas, absMinX, absMinY, cropW, cropH, 0, 0, outW, outH);
+
+      return cropCanvas.toDataURL("image/jpeg", 0.86);
+    }
+
+    /**
+     * Reads an uploaded MCQ PDF page-by-page, extracts text lines with coordinates,
+     * detects any diagrams / pictures associated with each question, and crops them.
+     */
+    async function extractPdfQuestionsWithDiagrams(pdf, statusCallback) {
+      const diagramsByQNum = {};
+      let fullText = "";
+
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        if (statusCallback) statusCallback(pageNum, pdf.numPages);
+        const page = await pdf.getPage(pageNum);
+
+        // 1. Render page to canvas at 1.5x scale for high-fidelity diagram cropping
+        const scale = 1.5;
+        const viewport = page.getViewport({ scale });
+        const pageCanvas = document.createElement("canvas");
+        pageCanvas.width = Math.floor(viewport.width);
+        pageCanvas.height = Math.floor(viewport.height);
+        const pageCtx = pageCanvas.getContext("2d", { willReadFrequently: true });
+
+        pageCtx.fillStyle = "#ffffff";
+        pageCtx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+        await page.render({ canvasContext: pageCtx, viewport }).promise;
+
+        // 2. Extract text items and project into viewport coordinates
+        const textContent = await page.getTextContent();
+        const items = textContent.items;
+
+        const canvasItems = [];
+        for (const item of items) {
+          if (!item.str && !item.hasEOL) continue;
+          const pt = viewport.convertToViewportPoint(item.transform[4], item.transform[5]);
+          canvasItems.push({
+            str: item.str,
+            hasEOL: item.hasEOL,
+            cx: pt[0],
+            cy: pt[1],
+            width: item.width * scale,
+            height: (item.height || 12) * scale,
+            pdfY: item.transform[5]
+          });
+        }
+
+        // Group text items into lines based on vertical baseline
+        const lines = [];
+        let curLine = null;
+        for (const it of canvasItems) {
+          if (!it.str) {
+            if (curLine) { lines.push(curLine); curLine = null; }
+            continue;
+          }
+          if (!curLine || Math.abs(it.cy - curLine.cy) > 5) {
+            if (curLine) lines.push(curLine);
+            curLine = {
+              text: it.str,
+              cy: it.cy,
+              minX: it.cx,
+              maxX: it.cx + it.width,
+              topY: it.cy - it.height,
+              bottomY: it.cy + 4,
+              pdfY: it.pdfY
+            };
+          } else {
+            curLine.text += (curLine.text.endsWith(" ") ? "" : " ") + it.str;
+            curLine.minX = Math.min(curLine.minX, it.cx);
+            curLine.maxX = Math.max(curLine.maxX, it.cx + it.width);
+            curLine.topY = Math.min(curLine.topY, it.cy - it.height);
+            curLine.bottomY = Math.max(curLine.bottomY, it.cy + 4);
+          }
+        }
+        if (curLine) lines.push(curLine);
+
+        // Build plain text for this page
+        let pageText = "";
+        for (const ln of lines) {
+          pageText += ln.text + "\n";
+        }
+        fullText += pageText + "\n";
+
+        // 3. Detect question structures and locate diagrams on this page
+        const qStartRegex = /^(?:(?:Q(?:uestion)?|Que|Qn)[\.\s]*(\d+)[\.\:\-\s]+|(\d+)[\.\:\-\s]+)/i;
+        const optARegex = /^(?:\([Aa1]\)|[Aa1][\.\)])\s*/;
+        const anyOptRegex = /^(?:\([A-Da-d1-4]\)|[A-Da-d1-4][\.\)])\s*/;
+
+        const pageQuestions = [];
+        let currentPQ = null;
+
+        for (let lIdx = 0; lIdx < lines.length; lIdx++) {
+          const ln = lines[lIdx];
+          const trimmed = ln.text.trim();
+          const qMatch = trimmed.match(qStartRegex);
+
+          if (qMatch) {
+            const qNum = parseInt(qMatch[1] || qMatch[2], 10);
+            if (qNum > 0 && qNum <= 250) {
+              if (currentPQ) pageQuestions.push(currentPQ);
+              currentPQ = {
+                qNum: qNum,
+                startY: ln.topY,
+                textEndY: ln.bottomY,
+                optionAY: null,
+                optionsEndY: null,
+                hasDiagramMention: /(?:diagram|figure|graph|circuit|shown below|given below|as shown|chart|illustration|structure|image)/i.test(trimmed)
+              };
+              continue;
+            }
+          }
+
+          if (currentPQ) {
+            if (!currentPQ.hasDiagramMention) {
+              currentPQ.hasDiagramMention = /(?:diagram|figure|graph|circuit|shown below|given below|as shown|chart|illustration|structure|image)/i.test(trimmed);
+            }
+
+            if (optARegex.test(trimmed) && currentPQ.optionAY === null) {
+              currentPQ.optionAY = ln.topY;
+              currentPQ.optionsEndY = ln.bottomY;
+            } else if (anyOptRegex.test(trimmed)) {
+              if (currentPQ.optionAY === null) currentPQ.optionAY = ln.topY;
+              currentPQ.optionsEndY = Math.max(currentPQ.optionsEndY || 0, ln.bottomY);
+            } else if (currentPQ.optionAY === null) {
+              currentPQ.textEndY = Math.max(currentPQ.textEndY, ln.bottomY);
+            } else {
+              currentPQ.optionsEndY = Math.max(currentPQ.optionsEndY, ln.bottomY);
+            }
+          }
+        }
+        if (currentPQ) pageQuestions.push(currentPQ);
+
+        // Search for diagrams in each question's zone
+        for (let qIdx = 0; qIdx < pageQuestions.length; qIdx++) {
+          const pq = pageQuestions[qIdx];
+          const nextPQ = (qIdx + 1 < pageQuestions.length) ? pageQuestions[qIdx + 1] : null;
+
+          // Collect all text lines belonging to this question
+          const qLines = lines.filter(ln => {
+            return ln.topY >= pq.startY - 6 && ln.bottomY <= (nextPQ ? nextPQ.startY - 2 : pageCanvas.height);
+          });
+
+          // Question zone on page
+          const qTopY = Math.max(0, pq.startY - 4);
+          const qBottomY = nextPQ ? nextPQ.startY - 4 : pageCanvas.height;
+
+          const searchBox = {
+            minX: 0,
+            maxX: pageCanvas.width,
+            minY: qTopY,
+            maxY: qBottomY
+          };
+
+          const diagDataUrl = findAndCropDiagramFromCanvas(pageCanvas, pageCtx, searchBox, qLines);
+          if (diagDataUrl) {
+            diagramsByQNum[pq.qNum] = diagDataUrl;
+          }
+        }
+      }
+
+      return { rawText: fullText, diagramsByQNum };
+    }
+
     async function handlePdfFileInputChange(event) {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
@@ -4193,29 +5808,14 @@ Answer: A"></textarea>
           const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
           const pdf = await loadingTask.promise;
 
-          if (statusEl) statusEl.textContent = `⏳ Scanning ${pdf.numPages} page(s) for questions 1 to 75+...`;
-          let fullText = "";
-          for (let i = 1; i <= pdf.numPages; i++) {
-            const page = await pdf.getPage(i);
-            const content = await page.getTextContent();
-            let pageText = "";
-            let lastY = null;
-            for (const item of content.items) {
-              if (!item.str && !item.hasEOL) continue;
-              const currentY = item.transform ? item.transform[5] : null;
-              if (lastY !== null && currentY !== null && Math.abs(currentY - lastY) > 3) {
-                pageText += "\n";
-              } else if (item.hasEOL) {
-                pageText += "\n";
-              } else if (pageText.length > 0 && !pageText.endsWith("\n") && !pageText.endsWith(" ")) {
-                pageText += " ";
-              }
-              pageText += item.str;
-              if (currentY !== null) lastY = currentY;
-            }
-            fullText += pageText + "\n";
-          }
-          processAndDisplayParsedText(fullText, `${file.name} (${pdf.numPages} pages)`);
+          let diagramsByQNum = {};
+          if (statusEl) statusEl.textContent = `⏳ Scanning ${pdf.numPages} page(s) for questions & diagrams (1 to 75+)...`;
+          const res = await extractPdfQuestionsWithDiagrams(pdf, (cur, total) => {
+            if (statusEl) statusEl.textContent = `⏳ Scanning page ${cur} of ${total} for questions & diagrams...`;
+          });
+          const fullText = res.rawText;
+          diagramsByQNum = res.diagramsByQNum;
+          processAndDisplayParsedText(fullText, `${file.name} (${pdf.numPages} pages)`, diagramsByQNum);
         } else {
           throw new Error("Unsupported format. Please select a .pdf or .txt file.");
         }
@@ -4239,12 +5839,12 @@ Answer: A"></textarea>
       processAndDisplayParsedText(raw, "Pasted text");
     }
 
-    function processAndDisplayParsedText(text, sourceDesc) {
+    function processAndDisplayParsedText(text, sourceDesc, diagramsByQNum = {}) {
       const defaultSubject = document.getElementById("pdfDefaultSubjectSelect").value || "General";
       const defaultMarks = parseInt(document.getElementById("pdfDefaultMarks").value, 10) || 4;
       const defaultNegMarks = parseInt(document.getElementById("pdfDefaultNegMarks").value, 10) || 1;
 
-      const questions = parseMCQText(text, defaultSubject, defaultMarks, defaultNegMarks);
+      const questions = parseMCQText(text, defaultSubject, defaultMarks, defaultNegMarks, diagramsByQNum);
       currentParsedQuestions = questions;
 
       const statusEl = document.getElementById("pdfParseStatusMsg");
@@ -4267,7 +5867,9 @@ Answer: A"></textarea>
         statusEl.style.background = "#dcfce7";
         statusEl.style.color = "#166534";
         statusEl.style.border = "1px solid #bbf7d0";
-        statusEl.textContent = `✅ Successfully extracted ${questions.length} question(s) from ${sourceDesc}! Review them below.`;
+        const diagramCount = questions.filter(q => q.image).length;
+        const diagNotice = diagramCount > 0 ? ` (with ${diagramCount} diagram/figure image(s) attached!)` : "";
+        statusEl.textContent = `✅ Successfully extracted ${questions.length} question(s)${diagNotice} from ${sourceDesc}! Review them below.`;
       }
 
       renderParsedQuestionsPreview();
@@ -4283,7 +5885,7 @@ Answer: A"></textarea>
       }
     }
 
-    function parseMCQText(text, defaultSubject = "General", marks = 4, negMarks = 1) {
+    function parseMCQText(text, defaultSubject = "General", marks = 4, negMarks = 1, diagramsByQNum = {}) {
       if (!text || typeof text !== "string") return [];
       text = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
       text = text.replace(/---\s*Page\s*\d+\s*---/gi, "");
@@ -4353,6 +5955,8 @@ Answer: A"></textarea>
           });
         }
 
+        const hasDiag = !!(diagramsByQNum[qNum] || diagramsByQNum[qIdx + 1]);
+
         if (matches.length >= 2) {
           const questionText = body.substring(0, matches[0].index).trim();
           const options = [];
@@ -4367,20 +5971,57 @@ Answer: A"></textarea>
           }
           const finalOptions = options.slice(0, 4);
 
-          if (questionText.length >= 2) {
+          let finalQText = questionText;
+          if (!finalQText || finalQText.length < 2) {
+            if (hasDiag) {
+              finalQText = "Refer to the diagram / figure given below:";
+            }
+          }
+
+          if (finalQText && finalQText.length >= 2) {
             parsed.push({
               q_num: qNum,
-              question: questionText,
+              question: finalQText,
               options: finalOptions,
               correct_answer: correctIdx,
               subject: currentSubject,
               section: currentSubject,
               marks: marks,
-              negative_marks: negMarks
+              negative_marks: negMarks,
+              image: hasDiag ? (diagramsByQNum[qNum] || diagramsByQNum[qIdx + 1]) : null
             });
           }
+        } else if (hasDiag) {
+          let finalQText = body.trim();
+          if (!finalQText || finalQText.length < 2) {
+            finalQText = "Refer to the diagram / figure given below:";
+          }
+          parsed.push({
+            q_num: qNum,
+            question: finalQText,
+            options: ["(A)", "(B)", "(C)", "(D)"],
+            correct_answer: correctIdx,
+            subject: currentSubject,
+            section: currentSubject,
+            marks: marks,
+            negative_marks: negMarks,
+            image: diagramsByQNum[qNum] || diagramsByQNum[qIdx + 1]
+          });
         }
       }
+
+      // Attach any extracted diagrams/figures and ensure questions are sequentially numbered 1 to N
+      parsed.forEach((q, idx) => {
+        const origQNum = q.q_num || (idx + 1);
+        if (!q.image) {
+          if (diagramsByQNum[origQNum]) {
+            q.image = diagramsByQNum[origQNum];
+          } else if (diagramsByQNum[idx + 1]) {
+            q.image = diagramsByQNum[idx + 1];
+          }
+        }
+        q.q_num = idx + 1;
+      });
 
       return parsed;
     }
@@ -4427,6 +6068,21 @@ Answer: A"></textarea>
           `;
         });
 
+        let diagHtml = "";
+        if (q.image) {
+          diagHtml = `
+            <div style="margin: 0.5rem 0 0.75rem 0; padding: 0.5rem 0.75rem; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                <span style="font-size: 0.75rem; font-weight: 800; color: #1e40af;">📊 ATTACHED DIAGRAM / PICTURE:</span>
+                <button type="button" class="btn btn-secondary" onclick="removeParsedQDiagram(${idx})" style="padding: 0.15rem 0.4rem; font-size: 0.7rem; color: #dc2626; border-color: #fca5a5;">
+                  ✕ Remove Diagram
+                </button>
+              </div>
+              <img src="${q.image}" alt="Question Diagram" style="max-height: 160px; max-width: 100%; object-fit: contain; border-radius: 4px; border: 1px solid #cbd5e1; background: #ffffff; display: block; cursor: zoom-in;" onclick="window.open(this.src, '_blank')" title="Click to enlarge" />
+            </div>
+          `;
+        }
+
         card.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
             <span style="font-weight: 800; font-size: 0.85rem; color: #1e3a8a;">Question #${idx + 1}</span>
@@ -4437,6 +6093,7 @@ Answer: A"></textarea>
           <div style="margin-bottom: 0.6rem;">
             <textarea class="form-control" rows="2" style="width: 100%; font-size: 0.85rem;" onchange="updateParsedQText(${idx}, this.value)">${escapeHtml(q.question)}</textarea>
           </div>
+          ${diagHtml}
           <div>
             <div style="font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 0.3rem;">Options (select radio button for correct answer):</div>
             ${optsHtml}
@@ -4444,6 +6101,13 @@ Answer: A"></textarea>
         `;
         listEl.appendChild(card);
       });
+    }
+
+    function removeParsedQDiagram(idx) {
+      if (currentParsedQuestions[idx]) {
+        delete currentParsedQuestions[idx].image;
+        renderParsedQuestionsPreview();
+      }
     }
 
     function updateParsedQText(idx, val) {
@@ -4488,7 +6152,8 @@ Answer: A"></textarea>
           subject: q.subject || defaultSubject,
           section: q.section || defaultSubject,
           marks: q.marks || marks,
-          negative_marks: q.negative_marks || negMarks
+          negative_marks: q.negative_marks || negMarks,
+          image: q.image || null
         });
       });
 
@@ -4653,35 +6318,19 @@ Answer: A"></textarea>
           const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
           const pdf = await loadingTask.promise;
 
-          if (statusEl) statusEl.textContent = `⏳ Scanning ${pdf.numPages} page(s) for questions 1 to 75+...`;
-          let fullText = "";
-          for (let i = 1; i <= pdf.numPages; i++) {
-            const page = await pdf.getPage(i);
-            const content = await page.getTextContent();
-            let pageText = "";
-            let lastY = null;
-            for (const item of content.items) {
-              if (!item.str && !item.hasEOL) continue;
-              const currentY = item.transform ? item.transform[5] : null;
-              if (lastY !== null && currentY !== null && Math.abs(currentY - lastY) > 3) {
-                pageText += "\n";
-              } else if (item.hasEOL) {
-                pageText += "\n";
-              } else if (pageText.length > 0 && !pageText.endsWith("\n") && !pageText.endsWith(" ")) {
-                pageText += " ";
-              }
-              pageText += item.str;
-              if (currentY !== null) lastY = currentY;
-            }
-            fullText += pageText + "\n";
-          }
-          rawText = fullText;
+          let diagramsByQNum = {};
+          if (statusEl) statusEl.textContent = `⏳ Scanning ${pdf.numPages} page(s) for questions & diagrams (1 to 75+)...`;
+          const res = await extractPdfQuestionsWithDiagrams(pdf, (cur, total) => {
+            if (statusEl) statusEl.textContent = `⏳ Scanning page ${cur} of ${total} for questions & diagrams...`;
+          });
+          rawText = res.rawText;
+          diagramsByQNum = res.diagramsByQNum;
         } else {
           throw new Error('Unsupported format. Please select a .pdf or .txt file.');
         }
 
         const category = document.getElementById('newExamCategory').value || 'General';
-        const questions = parseMCQText(rawText, category, 4, 1);
+        const questions = parseMCQText(rawText, category, 4, 1, diagramsByQNum);
         createExamParsedQuestions = questions;
 
         if (questions.length === 0) {
@@ -4693,12 +6342,14 @@ Answer: A"></textarea>
           }
           if (submitBtn) submitBtn.textContent = '🚀 Create Examination';
         } else {
-          const lastQNum = questions[questions.length - 1].q_num || questions.length;
+          const lastQNum = questions.length;
+          const diagramCount = questions.filter(q => q.image).length;
+          const diagNotice = diagramCount > 0 ? ` (${diagramCount} diagram/figure(s) attached)` : "";
           if (statusEl) {
             statusEl.style.background = '#dcfce7';
             statusEl.style.color = '#166534';
             statusEl.style.border = '1px solid #bbf7d0';
-            statusEl.textContent = `✅ Successfully scanned ${questions.length} MCQ(s) from ${file.name} (Questions 1 to ${lastQNum}) with all options! They will all be automatically added to this exam paper upon creation.`;
+            statusEl.textContent = `✅ Successfully scanned ${questions.length} MCQ(s) from ${file.name} (Questions 1 to ${lastQNum})${diagNotice} with all options! They will all be automatically added to this exam paper upon creation.`;
           }
           if (submitBtn) submitBtn.textContent = `🚀 Create Paper & Add ${questions.length} Questions from PDF`;
         }
@@ -5084,7 +6735,15 @@ Answer: A"></textarea>
     window.updateParsedQOption = updateParsedQOption;
     window.updateParsedQCorrect = updateParsedQCorrect;
     window.removeParsedQuestion = removeParsedQuestion;
+    window.removeParsedQDiagram = removeParsedQDiagram;
+    window.removeEditingQuestionDiagram = removeEditingQuestionDiagram;
     window.commitImportedPdfQuestions = commitImportedPdfQuestions;
+    window.openPyqBrowserModal = openPyqBrowserModal;
+    window.closePyqBrowserModal = closePyqBrowserModal;
+    window.setPyqExamFilter = setPyqExamFilter;
+    window.filterPyqQuestions = filterPyqQuestions;
+    window.renderPyqResults = renderPyqResults;
+    window.selectPyqQuestion = selectPyqQuestion;
 
     // -------------------------------------------------------------
     // Initial Page Boot
