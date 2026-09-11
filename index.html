@@ -1310,6 +1310,218 @@ body {
       border-color: #047857;
       box-shadow: 0 4px 8px rgba(5, 150, 105, 0.25);
     }
+
+    /* 3-Dots Menu & Papers & Solutions Styles */
+    .three-dots-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      line-height: 1;
+      padding: 0;
+    }
+    .three-dots-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: scale(1.05);
+    }
+    .solutions-dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      width: 310px;
+      background: #ffffff;
+      color: #0f172a;
+      border-radius: 12px;
+      box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.08);
+      z-index: 1200;
+      overflow: hidden;
+      display: none;
+      animation: dropdownFade 0.18s ease-out;
+    }
+    .solutions-dropdown.active {
+      display: block;
+    }
+    @keyframes dropdownFade {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .solutions-dropdown-header {
+      padding: 0.85rem 1rem 0.6rem;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .solutions-dropdown-title {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .solutions-dropdown-sub {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      margin-top: 0.15rem;
+    }
+    .solutions-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border: none;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .solutions-menu-item:hover {
+      background: #f1f5f9;
+    }
+    .solutions-menu-item:not(:last-child) {
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .solutions-item-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      flex-shrink: 0;
+    }
+    .icon-jee { background: #eff6ff; color: #2563eb; }
+    .icon-neet { background: #ecfdf5; color: #059669; }
+    .icon-board { background: #faf5ff; color: #7c3aed; }
+    .solutions-item-content strong {
+      display: block;
+      font-size: 0.88rem;
+      color: #0f172a;
+      font-weight: 700;
+    }
+    .solutions-item-content span {
+      display: block;
+      font-size: 0.73rem;
+      color: #64748b;
+    }
+    .solutions-item-arrow {
+      margin-left: auto;
+      color: #94a3b8;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .solutions-dropdown-footer {
+      padding: 0.6rem 1rem;
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+      font-size: 0.72rem;
+      color: #64748b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Floating side 3-dots widget */
+    .floating-solutions-tab {
+      position: fixed;
+      right: 0;
+      top: 40%;
+      transform: translateY(-50%);
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      color: #ffffff;
+      padding: 0.65rem 0.5rem;
+      border-radius: 10px 0 0 10px;
+      box-shadow: -4px 6px 18px rgba(0, 0, 0, 0.35);
+      cursor: pointer;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.2rem;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-right: none;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .floating-solutions-tab:hover {
+      transform: translateY(-50%) translateX(-4px);
+      background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+      box-shadow: -6px 8px 24px rgba(37, 99, 235, 0.45);
+    }
+    .floating-dots {
+      font-size: 1.3rem;
+      line-height: 1;
+      font-weight: 900;
+    }
+    .floating-label {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* Solutions Browser Modal */
+    .sol-tab-btn {
+      padding: 0.55rem 1.15rem;
+      font-size: 0.88rem;
+      font-weight: 700;
+      border-radius: 8px;
+      border: 2px solid #e2e8f0;
+      background: #f8fafc;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.18s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .sol-tab-btn:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+    .sol-tab-btn.active.jee {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #1d4ed8;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+    }
+    .sol-tab-btn.active.neet {
+      background: #059669;
+      color: #ffffff;
+      border-color: #047857;
+      box-shadow: 0 2px 8px rgba(5, 150, 105, 0.25);
+    }
+    .sol-tab-btn.active.board {
+      background: #7c3aed;
+      color: #ffffff;
+      border-color: #6d28d9;
+      box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25);
+    }
+    .sol-card {
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 1.1rem;
+      transition: all 0.2s;
+    }
+    .sol-card:hover {
+      border-color: #93c5fd;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+      transform: translateY(-2px);
+    }
   </style>
 </head>
 <body id="portalBody">
@@ -1327,11 +1539,56 @@ body {
         <span style="font-size: 0.78rem; background: rgba(255, 255, 255, 0.12); padding: 0.35rem 0.65rem; border-radius: 6px; font-weight: 600;">
           Vercel Edition
         </span>
-        <button type="button" onclick="switchLandingRole('host')" style="font-size: 0.8rem; padding: 0.35rem 0.75rem; background: #2563eb; color: white; border: none; font-weight: 700; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 0.35rem;">
-          ➕ Create Paper / Host
-        </button>
+
+        <!-- 3-Dots Button with Dropdown Menu -->
+        <div class="three-dots-container" style="position: relative;">
+          <button type="button" class="three-dots-btn" id="threeDotsMenuBtn" onclick="toggleSolutionsMenu(event)" title="Papers & Solutions (JEE, NEET, Board)" aria-label="Solutions Menu">
+            <span class="three-dots-icon">⋮</span>
+          </button>
+          
+          <div class="solutions-dropdown" id="solutionsDropdownMenu">
+            <div class="solutions-dropdown-header">
+              <div class="solutions-dropdown-title">📚 Papers & Solutions</div>
+              <div class="solutions-dropdown-sub">Question papers with complete detailed step-by-step solutions</div>
+            </div>
+            <button type="button" class="solutions-menu-item" onclick="openSolutionsModal('jee')">
+              <div class="solutions-item-icon icon-jee">📘</div>
+              <div class="solutions-item-content">
+                <strong>JEE Solution</strong>
+                <span>JEE Main & Advanced solved papers</span>
+              </div>
+              <span class="solutions-item-arrow">›</span>
+            </button>
+            <button type="button" class="solutions-menu-item" onclick="openSolutionsModal('neet')">
+              <div class="solutions-item-icon icon-neet">🩺</div>
+              <div class="solutions-item-content">
+                <strong>NEET Solution</strong>
+                <span>NEET-UG answer keys & solutions</span>
+              </div>
+              <span class="solutions-item-arrow">›</span>
+            </button>
+            <button type="button" class="solutions-menu-item" onclick="openSolutionsModal('board')">
+              <div class="solutions-item-icon icon-board">📜</div>
+              <div class="solutions-item-content">
+                <strong>Board Solution</strong>
+                <span>CBSE / GSEB Class 10 & 12 solutions</span>
+              </div>
+              <span class="solutions-item-arrow">›</span>
+            </button>
+            <div class="solutions-dropdown-footer">
+              <span>Official Solved Papers & Detailed Solutions</span>
+              <span style="font-weight: 800; color: #2563eb; cursor: pointer;" onclick="openSolutionsModal('jee')">Open All ↗</span>
+            </div>
+          </div>
+        </div>
       </div>
     </header>
+
+    <!-- Floating Side 3-Dots Quick Trigger (Right side of screen) -->
+    <div class="floating-solutions-tab" onclick="toggleSolutionsMenu(event)" title="Click to view JEE, NEET & Board Solutions">
+      <span class="floating-dots">⋮</span>
+      <span class="floating-label">Solutions</span>
+    </div>
 
     <!-- Main Content -->
     <main class="landing-content" style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem;">
@@ -1891,6 +2148,9 @@ body {
               </button>
               <button class="btn btn-success" onclick="openUploadPdfModal()" style="background: #059669; color: white; border: none; font-weight: 700; padding: 0.45rem 0.85rem; font-size: 0.85rem;" title="Upload PDF of MCQs to automatically parse and add to exam">
                 📄 Upload MCQ PDF
+              </button>
+              <button class="btn" onclick="openSolutionsModal('jee')" style="background: #0284c7; color: white; border: none; font-weight: 700; padding: 0.45rem 0.85rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.35rem;" title="Upload or manage Papers & Solutions for JEE, NEET, and Board Exams">
+                📑 Papers & Solutions
               </button>
               <button class="btn btn-secondary" onclick="resetCurrentExamQuestions()" style="color: #475569; border-color: #cbd5e1;">
                 🔄 Reset Questions
@@ -2705,6 +2965,237 @@ Answer: A"></textarea>
       box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
     }
   </style>
+
+  <!-- ==================== PAPERS & SOLUTIONS BROWSER MODAL ==================== -->
+  <div class="modal-overlay hidden" id="solutionsBrowserModal" style="z-index: 1250;">
+    <div class="confirm-modal-card" style="max-width: 960px; width: 95%; max-height: 90vh; display: flex; flex-direction: column; padding: 1.5rem;">
+      <!-- Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 0.85rem; margin-bottom: 1rem;">
+        <div>
+          <h3 style="font-size: 1.35rem; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+            <span>📚</span> Question Papers & Detailed Solutions
+          </h3>
+          <p style="font-size: 0.82rem; color: #64748b; margin: 0.25rem 0 0 0;">
+            Authentic solved examination papers with complete marking schemes for JEE, NEET, and Board exams.
+          </p>
+        </div>
+        <button type="button" onclick="closeSolutionsModal()" class="btn btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.9rem;">
+          ✕ Close
+        </button>
+      </div>
+
+      <!-- Category Tabs (JEE, NEET, Board) -->
+      <div style="display: flex; gap: 0.6rem; margin-bottom: 1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.85rem; flex-wrap: wrap;">
+        <button type="button" class="sol-tab-btn active jee" id="solTabJee" onclick="switchSolutionCategory('jee')">
+          <span>📘</span> JEE Solution (Main & Adv)
+        </button>
+        <button type="button" class="sol-tab-btn neet" id="solTabNeet" onclick="switchSolutionCategory('neet')">
+          <span>🩺</span> NEET Solution (UG)
+        </button>
+        <button type="button" class="sol-tab-btn board" id="solTabBoard" onclick="switchSolutionCategory('board')">
+          <span>📜</span> Board Solution (CBSE / GSEB)
+        </button>
+      </div>
+
+      <!-- Filters & Host Action Strip -->
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.85rem; margin-bottom: 1rem; display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+        <div style="display: flex; gap: 0.6rem; flex: 1; min-width: 260px; align-items: center;">
+          <input type="text" id="solSearchInput" class="form-control" style="padding: 0.45rem 0.75rem; font-size: 0.85rem; flex: 1;" placeholder="🔍 Search paper title, subject, or year..." oninput="filterSolutions()">
+          <select id="solYearSelect" class="form-control" style="padding: 0.45rem 0.75rem; font-size: 0.85rem; width: 140px;" onchange="filterSolutions()">
+            <option value="all">All Years</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+            <option value="2022">2022</option>
+            <option value="2021">2021</option>
+            <option value="2020">2020</option>
+            <option value="2019">2019</option>
+            <option value="2018">2018</option>
+            <option value="2017">2017</option>
+            <option value="2016">2016</option>
+            <option value="2015">2015</option>
+          </select>
+        </div>
+
+        <!-- Host Only Upload Button (Hidden for students on 1st page; shown only inside host mode) -->
+        <button type="button" id="solHostUploadBtn" class="btn btn-primary" onclick="handleHostUploadClick()" style="display: none; background: #2563eb; color: #ffffff; border: none; font-weight: 800; padding: 0.5rem 1rem; font-size: 0.85rem; align-items: center; gap: 0.4rem; white-space: nowrap; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);" title="Host Only: Upload new paper with its solution">
+          📤 Upload Paper & Solution
+        </button>
+      </div>
+
+      <!-- Info Bar -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; font-size: 0.82rem; color: #64748b;">
+        <span id="solCountBadge" style="font-weight: 700; color: #1e293b;">Showing Papers & Solutions</span>
+        <span style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; padding: 0.2rem 0.55rem; border-radius: 4px; font-weight: 600;">
+          💡 Complete Step-by-Step Solutions
+        </span>
+      </div>
+
+      <!-- Solutions Cards Container -->
+      <div id="solutionsCardsList" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.85rem; padding-right: 0.25rem;">
+        <!-- Injected dynamically via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SOLUTION FILE VIEWER MODAL ==================== -->
+  <div class="modal-overlay hidden" id="solutionViewerModal" style="z-index: 1300;">
+    <div class="confirm-modal-card" style="max-width: 860px; width: 95%; max-height: 88vh; display: flex; flex-direction: column; padding: 1.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.75rem; margin-bottom: 1rem;">
+        <div>
+          <h3 id="viewerModalTitle" style="font-size: 1.2rem; font-weight: 800; color: #0f172a; margin: 0;">
+            Paper & Solution Viewer
+          </h3>
+          <div id="viewerModalSubtitle" style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">
+            Viewing document
+          </div>
+        </div>
+        <button type="button" onclick="closeSolutionViewerModal()" class="btn btn-secondary" style="padding: 0.3rem 0.7rem; font-size: 0.85rem;">
+          ✕ Close
+        </button>
+      </div>
+
+      <div id="viewerModalContent" style="flex: 1; overflow-y: auto; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem;">
+        <!-- Content rendered via JS -->
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 0.85rem; margin-top: 1rem;">
+        <button type="button" onclick="closeSolutionViewerModal()" class="btn btn-secondary">
+          Close
+        </button>
+        <button type="button" id="btnViewerDownload" class="btn btn-primary" style="background: #059669; font-weight: 700; display: flex; align-items: center; gap: 0.35rem;">
+          📥 Download File
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== HOST UPLOAD PAPER & SOLUTION MODAL ==================== -->
+  <div class="modal-overlay hidden" id="uploadSolutionModal" style="z-index: 1350;">
+    <div class="confirm-modal-card" style="max-width: 680px; width: 95%; max-height: 90vh; overflow-y: auto; padding: 1.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 0.75rem; margin-bottom: 1.25rem;">
+        <div>
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.4rem;">
+            <span>📤</span> Upload Paper with Solution
+          </h3>
+          <p style="font-size: 0.8rem; color: #64748b; margin: 0.2rem 0 0 0;">
+            Host Only: Add question paper and its solution for students to view.
+          </p>
+        </div>
+        <button type="button" onclick="closeUploadSolutionModal()" class="btn btn-secondary" style="padding: 0.3rem 0.7rem; font-size: 0.85rem;">
+          ✕ Close
+        </button>
+      </div>
+
+      <form id="uploadSolutionForm" onsubmit="submitUploadSolutionForm(event)">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div>
+            <label class="form-label" style="font-weight: 700; font-size: 0.85rem;">Category *</label>
+            <select id="solFormCategory" class="form-control" required style="padding: 0.55rem; width: 100%;">
+              <option value="jee">📘 JEE Solution (Main & Advanced)</option>
+              <option value="neet">🩺 NEET Solution (UG)</option>
+              <option value="board">📜 Board Solution (CBSE / GSEB)</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label" style="font-weight: 700; font-size: 0.85rem;">Examination Year *</label>
+            <input type="number" id="solFormYear" class="form-control" value="2024" min="2000" max="2030" required style="padding: 0.55rem; width: 100%;">
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <label class="form-label" style="font-weight: 700; font-size: 0.85rem;">Paper & Solution Title *</label>
+          <input type="text" id="solFormTitle" class="form-control" placeholder="e.g. JEE Main 2024 Session 1 Official Paper & Detailed Solutions" required style="padding: 0.55rem; width: 100%;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div>
+            <label class="form-label" style="font-weight: 700; font-size: 0.85rem;">Subject / Stream</label>
+            <input type="text" id="solFormSubject" class="form-control" placeholder="e.g. Physics, Chemistry & Maths" style="padding: 0.55rem; width: 100%;">
+          </div>
+          <div>
+            <label class="form-label" style="font-weight: 700; font-size: 0.85rem;">Board / Conducting Body</label>
+            <input type="text" id="solFormBoard" class="form-control" placeholder="e.g. NTA / CBSE / GSEB" style="padding: 0.55rem; width: 100%;">
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <label class="form-label" style="font-weight: 700; font-size: 0.85rem;">Summary / Description</label>
+          <textarea id="solFormDescription" class="form-control" rows="2" placeholder="Provide overview, shift timing, answer key highlights, or syllabus topics covered..." style="width: 100%; resize: vertical;"></textarea>
+        </div>
+
+        <!-- File Uploads Strip -->
+        <div style="background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+          <div style="font-weight: 700; font-size: 0.88rem; color: #1e293b; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
+            <span>📎</span> Attach Question Paper & Solution Files
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div>
+              <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 0.35rem;">
+                1. Question Paper (PDF / Image / Doc)
+              </label>
+              <input type="file" id="solPaperFileInput" class="form-control" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.txt" style="font-size: 0.8rem; padding: 0.45rem;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 0.35rem;">
+                2. Solution / Answer Key File (PDF / Doc) *
+              </label>
+              <input type="file" id="solSolutionFileInput" class="form-control" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.txt" style="font-size: 0.8rem; padding: 0.45rem;">
+            </div>
+          </div>
+          <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.5rem;">
+            Supported formats: PDF, Images (PNG/JPG), Word Documents (.doc/.docx), Text. Files are securely stored for immediate student access.
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 1rem;">
+          <button type="button" onclick="closeUploadSolutionModal()" class="btn btn-secondary">
+            Cancel
+          </button>
+          <button type="submit" id="btnSubmitSolutionUpload" class="btn btn-primary" style="background: #2563eb; font-weight: 800; padding: 0.6rem 1.4rem;">
+            ✅ Upload Paper with Solution
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== HOST QUICK AUTH PROMPT MODAL ==================== -->
+  <div class="modal-overlay hidden" id="hostAuthPromptModal" style="z-index: 1400;">
+    <div class="confirm-modal-card" style="max-width: 440px; width: 95%; padding: 1.5rem;">
+      <div style="text-align: center; margin-bottom: 1.25rem;">
+        <div style="font-size: 2.2rem; margin-bottom: 0.35rem;">🔑</div>
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0;">
+          Host Verification Required
+        </h3>
+        <p style="font-size: 0.82rem; color: #64748b; margin-top: 0.3rem;">
+          Only examiners and hosts can upload papers with solutions. Enter host credentials to continue.
+        </p>
+      </div>
+
+      <form id="hostQuickAuthForm" onsubmit="submitHostQuickAuth(event)">
+        <div class="form-group" style="margin-bottom: 0.85rem;">
+          <label class="form-label" style="font-weight: 700; font-size: 0.85rem;">Host Username</label>
+          <input type="text" id="quickAuthUsername" class="form-control" placeholder="Host Username" required>
+        </div>
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label" style="font-weight: 700; font-size: 0.85rem;">Host Password</label>
+          <input type="password" id="quickAuthPassword" class="form-control" placeholder="Host Password" required>
+        </div>
+
+        <div id="quickAuthError" style="display: none; background: #fee2e2; border: 1px solid #fca5a5; color: #dc2626; padding: 0.5rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.85rem; text-align: center;"></div>
+
+        <div style="display: flex; gap: 0.6rem; justify-content: flex-end;">
+          <button type="button" onclick="closeHostAuthModal()" class="btn btn-secondary">
+            Cancel
+          </button>
+          <button type="submit" id="btnSubmitQuickAuth" class="btn btn-primary" style="background: #0f172a; color: white; font-weight: 700;">
+            Verify & Proceed to Upload
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- ================= STANDALONE CLIENT SCRIPT ================= -->
   <script>
@@ -3628,6 +4119,96 @@ window.PYQ_BANK = [
 
 
     // -------------------------------------------------------------
+    // Default Seed Solved Papers & Solutions (JEE, NEET, Board)
+    // -------------------------------------------------------------
+    const SEED_SOLUTIONS = [
+      {
+        id: 1,
+        category: "jee",
+        title: "JEE Main 2024 (Session 1 - 27 Jan Shift 1) - Complete Solved Paper",
+        year: 2024,
+        subject: "Physics, Chemistry & Mathematics",
+        board_name: "NTA",
+        description: "Official question paper with detailed step-by-step solution, conceptual shortcuts, and marking scheme (+4 / -1).",
+        paper_file_name: "JEE_Main_2024_Jan27_Shift1_Paper.pdf",
+        paper_file_data: null,
+        solution_file_name: "JEE_Main_2024_Jan27_Shift1_Solutions.pdf",
+        solution_file_data: null,
+        created_at: "2024-02-05"
+      },
+      {
+        id: 2,
+        category: "jee",
+        title: "JEE Advanced 2023 Paper 1 & Paper 2 - Comprehensive Solutions",
+        year: 2023,
+        subject: "PCM (Physics, Chemistry, Maths)",
+        board_name: "IIT Guwahati",
+        description: "Full solutions with multiple-choice, numerical value, and matching list type detailed analysis.",
+        paper_file_name: "JEE_Advanced_2023_Complete_Paper.pdf",
+        paper_file_data: null,
+        solution_file_name: "JEE_Advanced_2023_Official_Solutions.pdf",
+        solution_file_data: null,
+        created_at: "2023-06-20"
+      },
+      {
+        id: 3,
+        category: "neet",
+        title: "NEET (UG) 2024 Official Question Paper & Final Answer Key",
+        year: 2024,
+        subject: "Physics, Chemistry, Botany & Zoology",
+        board_name: "NTA",
+        description: "Complete 200 question paper (180 to attempt, 720 Marks) with NCERT citations and step-by-step solutions.",
+        paper_file_name: "NEET_UG_2024_Question_Paper_Code_Q1.pdf",
+        paper_file_data: null,
+        solution_file_name: "NEET_UG_2024_Solutions_Code_Q1.pdf",
+        solution_file_data: null,
+        created_at: "2024-05-10"
+      },
+      {
+        id: 4,
+        category: "neet",
+        title: "NEET (UG) 2023 Solved Paper with Video Explanation Links",
+        year: 2023,
+        subject: "PCB (Physics, Chemistry, Biology)",
+        board_name: "NTA",
+        description: "Authentic NEET 2023 paper with full solutions for all 4 subjects and high-yield mnemonics.",
+        paper_file_name: "NEET_UG_2023_Paper.pdf",
+        paper_file_data: null,
+        solution_file_name: "NEET_UG_2023_Detailed_Solutions.pdf",
+        solution_file_data: null,
+        created_at: "2023-05-18"
+      },
+      {
+        id: 5,
+        category: "board",
+        title: "CBSE Class 12 Board Exam 2024 - Physics Solved Sample Paper",
+        year: 2024,
+        subject: "Physics (Theory - 70 Marks)",
+        board_name: "CBSE",
+        description: "Official CBSE Class 12 Physics paper with step-by-step derivation marking schemes and diagram rubrics.",
+        paper_file_name: "CBSE_Class12_Physics_2024_Paper.pdf",
+        paper_file_data: null,
+        solution_file_name: "CBSE_Class12_Physics_2024_Marking_Scheme.pdf",
+        solution_file_data: null,
+        created_at: "2024-03-15"
+      },
+      {
+        id: 6,
+        category: "board",
+        title: "GSEB / CBSE Class 12 Chemistry Board 2024 - Solved Paper",
+        year: 2024,
+        subject: "Chemistry",
+        board_name: "CBSE / GSEB",
+        description: "Complete solutions for Organic, Inorganic, and Physical chemistry sections with reaction mechanisms.",
+        paper_file_name: "Board_Chemistry_2024_Paper.pdf",
+        paper_file_data: null,
+        solution_file_name: "Board_Chemistry_2024_Solutions.pdf",
+        solution_file_data: null,
+        created_at: "2024-03-20"
+      }
+    ];
+
+    // -------------------------------------------------------------
     // LocalStorage Persistent State Manager
     // -------------------------------------------------------------
     const STORAGE_KEYS = {
@@ -3636,7 +4217,8 @@ window.PYQ_BANK = [
       SUBMISSIONS: 'nta_cloud_submissions',
       ACTIVE_CANDIDATES: 'nta_cloud_active_cands',
       HOST_AUTH: 'nta_cloud_host_auth',
-      HOST_CREDS: 'nta_cloud_host_creds'
+      HOST_CREDS: 'nta_cloud_host_creds',
+      SOLUTIONS: 'nta_cloud_solutions'
     };
 
     function loadFromStorage(key, defaultVal) {
@@ -3676,6 +4258,13 @@ window.PYQ_BANK = [
     let submissions = loadFromStorage(STORAGE_KEYS.SUBMISSIONS, []);
     let activeCandidates = loadFromStorage(STORAGE_KEYS.ACTIVE_CANDIDATES, []);
     let isHostAuthenticated = loadFromStorage(STORAGE_KEYS.HOST_AUTH, false);
+
+    let paperSolutions = loadFromStorage(STORAGE_KEYS.SOLUTIONS, null);
+    if (!paperSolutions || paperSolutions.length === 0) {
+      paperSolutions = JSON.parse(JSON.stringify(SEED_SOLUTIONS));
+      saveToStorage(STORAGE_KEYS.SOLUTIONS, paperSolutions);
+    }
+    let currentSolutionsCategory = 'jee';
 
     // Active candidate test state
     let currentExamSession = null;
@@ -3760,6 +4349,421 @@ window.PYQ_BANK = [
       setTimeout(() => {
         toast.style.display = 'none';
       }, duration);
+    }
+
+    // -------------------------------------------------------------
+    // 3-Dots Papers & Solutions (JEE, NEET, Board) Controller
+    // -------------------------------------------------------------
+    function toggleSolutionsMenu(e) {
+      if (e) {
+        e.stopPropagation();
+        e.preventDefault();
+      }
+      const menu = document.getElementById("solutionsDropdownMenu");
+      if (!menu) return;
+      menu.classList.toggle("active");
+    }
+
+    document.addEventListener("click", function(e) {
+      const menu = document.getElementById("solutionsDropdownMenu");
+      const btn = document.getElementById("threeDotsMenuBtn");
+      if (menu && menu.classList.contains("active")) {
+        if (!menu.contains(e.target) && (!btn || !btn.contains(e.target))) {
+          menu.classList.remove("active");
+        }
+      }
+    });
+
+    function openSolutionsModal(category) {
+      const menu = document.getElementById("solutionsDropdownMenu");
+      if (menu) menu.classList.remove("active");
+      const modal = document.getElementById("solutionsBrowserModal");
+      if (!modal) return;
+
+      // The host only can upload paper and solution, not student.
+      const uploadBtn = document.getElementById("solHostUploadBtn");
+      const isHostViewActive = document.getElementById("viewHost") && document.getElementById("viewHost").classList.contains("active");
+      if (uploadBtn) {
+        uploadBtn.style.display = (isHostAuthenticated && isHostViewActive) ? "flex" : "none";
+      }
+
+      modal.classList.remove("hidden");
+      switchSolutionCategory(category || 'jee');
+    }
+
+    function closeSolutionsModal() {
+      const modal = document.getElementById("solutionsBrowserModal");
+      if (modal) modal.classList.add("hidden");
+    }
+
+    function switchSolutionCategory(cat) {
+      currentSolutionsCategory = cat || 'jee';
+      ['jee', 'neet', 'board'].forEach(c => {
+        const tab = document.getElementById('solTab' + c.charAt(0).toUpperCase() + c.slice(1));
+        if (tab) {
+          if (c === currentSolutionsCategory) {
+            tab.className = `sol-tab-btn active ${c}`;
+          } else {
+            tab.className = `sol-tab-btn ${c}`;
+          }
+        }
+      });
+      filterSolutions();
+    }
+
+    function filterSolutions() {
+      const q = (document.getElementById("solSearchInput")?.value || "").trim().toLowerCase();
+      const year = document.getElementById("solYearSelect")?.value || "all";
+
+      let filtered = (paperSolutions || []).filter(item => item.category === currentSolutionsCategory);
+      if (year !== "all") {
+        filtered = filtered.filter(item => String(item.year) === String(year));
+      }
+      if (q) {
+        filtered = filtered.filter(item => 
+          (item.title && item.title.toLowerCase().includes(q)) ||
+          (item.subject && item.subject.toLowerCase().includes(q)) ||
+          (item.board_name && item.board_name.toLowerCase().includes(q)) ||
+          (item.description && item.description.toLowerCase().includes(q))
+        );
+      }
+      renderSolutionsList(filtered);
+    }
+
+    function renderSolutionsList(solutions) {
+      const listEl = document.getElementById("solutionsCardsList");
+      const countBadge = document.getElementById("solCountBadge");
+      if (!listEl) return;
+
+      const catNames = { jee: "JEE Main & Advanced", neet: "NEET-UG", board: "CBSE & GSEB Board" };
+      if (countBadge) {
+        countBadge.textContent = `Showing ${solutions.length} ${catNames[currentSolutionsCategory] || 'Solved'} Papers`;
+      }
+
+      if (solutions.length === 0) {
+        listEl.innerHTML = `
+          <div style="text-align: center; padding: 3rem 1rem; background: #ffffff; border-radius: 8px; border: 1.5px dashed #cbd5e1; color: #94a3b8;">
+            <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">📂</div>
+            <div style="font-weight: 700; color: #475569; font-size: 1rem;">No papers or solutions found</div>
+            <div style="font-size: 0.82rem; color: #64748b; margin-top: 0.35rem;">Examiners/Hosts can upload new question papers with complete solutions using the button above.</div>
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = "";
+      const catBadges = {
+        jee: { bg: "#eff6ff", text: "#1d4ed8", border: "#bfdbfe" },
+        neet: { bg: "#ecfdf5", text: "#047857", border: "#a7f3d0" },
+        board: { bg: "#faf5ff", text: "#6d28d9", border: "#ddd6fe" }
+      };
+
+      solutions.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "sol-card";
+        const b = catBadges[item.category] || { bg: "#f1f5f9", text: "#334155", border: "#cbd5e1" };
+
+        card.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+            <div style="display: flex; gap: 0.45rem; align-items: center; flex-wrap: wrap;">
+              <span style="background: ${b.bg}; color: ${b.text}; border: 1px solid ${b.border}; font-size: 0.75rem; font-weight: 800; padding: 0.2rem 0.55rem; border-radius: 4px; text-transform: uppercase;">
+                ${escapeHtml(item.category)} ${item.year || ''}
+              </span>
+              ${item.board_name ? `
+                <span style="background: #f1f5f9; color: #475569; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 4px;">
+                  🏛️ ${escapeHtml(item.board_name)}
+                </span>
+              ` : ''}
+              ${item.subject ? `
+                <span style="background: #f8fafc; color: #64748b; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.45rem; border-radius: 4px; border: 1px solid #e2e8f0;">
+                  📚 ${escapeHtml(item.subject)}
+                </span>
+              ` : ''}
+            </div>
+
+            <span style="font-size: 0.73rem; color: #94a3b8; font-weight: 600;">
+              Added: ${escapeHtml(item.created_at || 'Official')}
+            </span>
+          </div>
+
+          <h4 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0.25rem 0 0.45rem; line-height: 1.45;">
+            ${escapeHtml(item.title)}
+          </h4>
+
+          ${item.description ? `
+            <p style="font-size: 0.83rem; color: #475569; margin: 0 0 0.85rem; line-height: 1.5;">
+              ${escapeHtml(item.description)}
+            </p>
+          ` : ''}
+
+          <!-- Actions Strip -->
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button type="button" class="btn" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 0.8rem; font-weight: 700; padding: 0.35rem 0.75rem;" onclick="viewSolutionFile(${item.id}, 'paper')">
+                📄 View Paper
+              </button>
+              <button type="button" class="btn" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-size: 0.8rem; font-weight: 700; padding: 0.35rem 0.75rem;" onclick="viewSolutionFile(${item.id}, 'solution')">
+                💡 View Solution
+              </button>
+              <button type="button" class="btn" style="background: #f8fafc; color: #334155; border: 1px solid #cbd5e1; font-size: 0.8rem; font-weight: 700; padding: 0.35rem 0.75rem;" onclick="downloadSolutionFile(${item.id}, 'solution')">
+                📥 Download
+              </button>
+            </div>
+
+            ${(isHostAuthenticated && document.getElementById('viewHost') && document.getElementById('viewHost').classList.contains('active')) ? `
+              <button type="button" class="btn" style="background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; font-size: 0.78rem; font-weight: 700; padding: 0.3rem 0.65rem;" onclick="deleteSolution(${item.id})" title="Host Only: Delete Solution">
+                🗑️ Delete
+              </button>
+            ` : ''}
+          </div>
+        `;
+
+        listEl.appendChild(card);
+      });
+    }
+
+    function viewSolutionFile(solutionId, type) {
+      const modal = document.getElementById("solutionViewerModal");
+      const titleEl = document.getElementById("viewerModalTitle");
+      const subEl = document.getElementById("viewerModalSubtitle");
+      const contentEl = document.getElementById("viewerModalContent");
+      const dlBtn = document.getElementById("btnViewerDownload");
+
+      if (!modal) return;
+      modal.classList.remove("hidden");
+
+      const s = (paperSolutions || []).find(item => item.id === solutionId);
+      if (!s) {
+        if (contentEl) contentEl.innerHTML = '<div style="color: #dc2626; text-align: center;">Error loading solution file.</div>';
+        return;
+      }
+
+      const isPaper = type === 'paper';
+      const fileData = isPaper ? s.paper_file_data : s.solution_file_data;
+      const fileName = isPaper ? s.paper_file_name : s.solution_file_name;
+
+      if (titleEl) titleEl.textContent = isPaper ? `📄 ${s.title} (Question Paper)` : `💡 ${s.title} (Solution & Key)`;
+      if (subEl) subEl.textContent = `${s.category.toUpperCase()} • Year: ${s.year} • ${s.subject || 'All Subjects'} • File: ${fileName || 'Official Document'}`;
+
+      if (dlBtn) dlBtn.onclick = () => downloadSolutionFile(solutionId, type);
+
+      if (contentEl) {
+        if (fileData && fileData.startsWith('data:image/')) {
+          contentEl.innerHTML = `<div style="text-align: center;"><img src="${fileData}" alt="Document" style="max-width: 100%; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></div>`;
+        } else if (fileData && fileData.startsWith('data:application/pdf')) {
+          contentEl.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 1rem; align-items: center; justify-content: center; min-height: 280px; text-align: center; background: #ffffff; border-radius: 8px; padding: 2rem; border: 1px solid #cbd5e1;">
+              <div style="font-size: 3rem;">📑</div>
+              <div style="font-weight: 800; font-size: 1.15rem; color: #0f172a;">${escapeHtml(fileName || 'Document.pdf')}</div>
+              <p style="color: #475569; max-width: 500px; font-size: 0.88rem;">${escapeHtml(s.description || 'Complete official paper and step-by-step solution available for download.')}</p>
+              <button class="btn btn-primary" style="background: #2563eb; font-weight: 800; padding: 0.6rem 1.5rem;" onclick="downloadSolutionFile(${solutionId}, '${type}')">
+                📥 Download & Open Full PDF
+              </button>
+            </div>
+          `;
+        } else {
+          contentEl.innerHTML = `
+            <div style="background: #ffffff; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0; font-family: monospace; font-size: 0.9rem; line-height: 1.6; white-space: pre-wrap; color: #1e293b;">
+<strong>=== ${escapeHtml(s.title)} ===</strong>
+Category: ${escapeHtml(s.category.toUpperCase())} | Year: ${escapeHtml(String(s.year))}
+Subject: ${escapeHtml(s.subject || 'General')}
+Board: ${escapeHtml(s.board_name || 'Official')}
+
+<strong>Overview & Key Details:</strong>
+${escapeHtml(s.description || 'Step-by-step solutions with detailed working notes, diagrams, and marking rubrics.')}
+
+Document Reference: ${escapeHtml(fileName || 'Complete Solutions Archive')}
+            </div>
+          `;
+        }
+      }
+    }
+
+    function closeSolutionViewerModal() {
+      const modal = document.getElementById("solutionViewerModal");
+      if (modal) modal.classList.add("hidden");
+    }
+
+    function downloadSolutionFile(solutionId, type) {
+      const s = (paperSolutions || []).find(item => item.id === solutionId);
+      if (!s) {
+        alert("File not available for download.");
+        return;
+      }
+      const isPaper = type === 'paper';
+      const fileData = isPaper ? s.paper_file_data : s.solution_file_data;
+      const fileName = (isPaper ? s.paper_file_name : s.solution_file_name) || `${s.category}_${s.year}_${type}.pdf`;
+
+      if (fileData && fileData.startsWith('data:')) {
+        const a = document.createElement("a");
+        a.href = fileData;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } else {
+        const textContent = `${s.title}
+Category: ${s.category.toUpperCase()}
+Year: ${s.year}
+Subject: ${s.subject}
+Board: ${s.board_name}
+
+Description:
+${s.description}
+
+Official Solution & Answer Key Document.`;
+        const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${s.category}_${s.year}_solution.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    }
+
+    function handleHostUploadClick() {
+      if (isHostAuthenticated) {
+        openUploadSolutionModal();
+      } else {
+        promptHostAuthModal();
+      }
+    }
+
+    function openUploadSolutionModal() {
+      const modal = document.getElementById("uploadSolutionModal");
+      if (!modal) return;
+      const catSelect = document.getElementById("solFormCategory");
+      if (catSelect) catSelect.value = currentSolutionsCategory;
+      modal.classList.remove("hidden");
+    }
+
+    function closeUploadSolutionModal() {
+      const modal = document.getElementById("uploadSolutionModal");
+      if (modal) modal.classList.add("hidden");
+    }
+
+    function promptHostAuthModal() {
+      const modal = document.getElementById("hostAuthPromptModal");
+      if (modal) {
+        const errBox = document.getElementById("quickAuthError");
+        if (errBox) errBox.style.display = "none";
+        modal.classList.remove("hidden");
+      }
+    }
+
+    function closeHostAuthModal() {
+      const modal = document.getElementById("hostAuthPromptModal");
+      if (modal) modal.classList.add("hidden");
+    }
+
+    function submitHostQuickAuth(e) {
+      e.preventDefault();
+      const username = document.getElementById("quickAuthUsername")?.value.trim();
+      const password = document.getElementById("quickAuthPassword")?.value.trim();
+      const errBox = document.getElementById("quickAuthError");
+      const hostCreds = loadFromStorage(STORAGE_KEYS.HOST_CREDS, null);
+
+      if (!hostCreds) {
+        saveToStorage(STORAGE_KEYS.HOST_CREDS, { username, password });
+        isHostAuthenticated = true;
+        saveToStorage(STORAGE_KEYS.HOST_AUTH, true);
+        refreshHostLoginUI();
+        closeHostAuthModal();
+        openUploadSolutionModal();
+      } else if (username === hostCreds.username && password === hostCreds.password) {
+        isHostAuthenticated = true;
+        saveToStorage(STORAGE_KEYS.HOST_AUTH, true);
+        refreshHostLoginUI();
+        closeHostAuthModal();
+        openUploadSolutionModal();
+      } else {
+        if (errBox) {
+          errBox.textContent = "Invalid host credentials.";
+          errBox.style.display = "block";
+        }
+      }
+    }
+
+    async function submitUploadSolutionForm(e) {
+      e.preventDefault();
+      const btn = document.getElementById("btnSubmitSolutionUpload");
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "Uploading & Processing...";
+      }
+
+      const category = document.getElementById("solFormCategory")?.value || 'jee';
+      const year = parseInt(document.getElementById("solFormYear")?.value || '2024');
+      const title = document.getElementById("solFormTitle")?.value.trim() || 'Official Solved Paper';
+      const subject = document.getElementById("solFormSubject")?.value.trim() || '';
+      const board = document.getElementById("solFormBoard")?.value.trim() || '';
+      const description = document.getElementById("solFormDescription")?.value.trim() || '';
+
+      const paperFile = document.getElementById("solPaperFileInput")?.files[0];
+      const solutionFile = document.getElementById("solSolutionFileInput")?.files[0];
+
+      let paperData = null;
+      let paperName = null;
+      if (paperFile) {
+        paperName = paperFile.name;
+        paperData = await readFileAsDataURL(paperFile);
+      }
+
+      let solutionData = null;
+      let solutionName = null;
+      if (solutionFile) {
+        solutionName = solutionFile.name;
+        solutionData = await readFileAsDataURL(solutionFile);
+      }
+
+      const newId = (paperSolutions.length > 0 ? Math.max(...paperSolutions.map(s => s.id || 0)) : 0) + 1;
+      const newSol = {
+        id: newId,
+        category,
+        year,
+        title,
+        subject,
+        board_name: board,
+        description,
+        paper_file_name: paperName,
+        paper_file_data: paperData,
+        solution_file_name: solutionName,
+        solution_file_data: solutionData,
+        created_at: new Date().toISOString().split('T')[0]
+      };
+
+      paperSolutions.unshift(newSol);
+      saveToStorage(STORAGE_KEYS.SOLUTIONS, paperSolutions);
+
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = "✅ Upload Paper with Solution";
+      }
+
+      alert("🎉 Paper and solution uploaded successfully!");
+      closeUploadSolutionModal();
+      document.getElementById("uploadSolutionForm")?.reset();
+      switchSolutionCategory(category);
+    }
+
+    function deleteSolution(id) {
+      if (!confirm("Are you sure you want to delete this paper and solution?")) return;
+      paperSolutions = paperSolutions.filter(item => item.id !== id);
+      saveToStorage(STORAGE_KEYS.SOLUTIONS, paperSolutions);
+      alert("Deleted successfully.");
+      switchSolutionCategory(currentSolutionsCategory);
+    }
+
+    function readFileAsDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
+      });
     }
 
     // -------------------------------------------------------------
@@ -6744,6 +7748,23 @@ window.PYQ_BANK = [
     window.filterPyqQuestions = filterPyqQuestions;
     window.renderPyqResults = renderPyqResults;
     window.selectPyqQuestion = selectPyqQuestion;
+    window.toggleSolutionsMenu = toggleSolutionsMenu;
+    window.openSolutionsModal = openSolutionsModal;
+    window.closeSolutionsModal = closeSolutionsModal;
+    window.switchSolutionCategory = switchSolutionCategory;
+    window.filterSolutions = filterSolutions;
+    window.renderSolutionsList = renderSolutionsList;
+    window.viewSolutionFile = viewSolutionFile;
+    window.closeSolutionViewerModal = closeSolutionViewerModal;
+    window.downloadSolutionFile = downloadSolutionFile;
+    window.handleHostUploadClick = handleHostUploadClick;
+    window.openUploadSolutionModal = openUploadSolutionModal;
+    window.closeUploadSolutionModal = closeUploadSolutionModal;
+    window.promptHostAuthModal = promptHostAuthModal;
+    window.closeHostAuthModal = closeHostAuthModal;
+    window.submitHostQuickAuth = submitHostQuickAuth;
+    window.submitUploadSolutionForm = submitUploadSolutionForm;
+    window.deleteSolution = deleteSolution;
 
     // -------------------------------------------------------------
     // Initial Page Boot
