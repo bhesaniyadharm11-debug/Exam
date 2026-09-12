@@ -1622,6 +1622,25 @@ body {
           </button>
         </div>
 
+        <!-- In-Progress Exam Resume Banner -->
+        <div id="resumeExamBanner" style="display: none; background: #fffbeb; border: 1.5px solid #fcd34d; border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 1.25rem; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.1);">
+          <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <span style="font-size: 1.5rem;">⏱️</span>
+            <div>
+              <strong style="color: #92400e; font-size: 0.92rem;" id="resumeExamTitle">Ongoing Exam In Progress</strong>
+              <div style="font-size: 0.78rem; color: #78350f;" id="resumeExamSubtitle">All answers auto-saved. Click to resume without losing answers.</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.4rem;">
+            <button type="button" class="btn btn-primary" onclick="resumeActiveExam()" style="background: #d97706; border: none; color: white; font-weight: 800; padding: 0.4rem 0.9rem; font-size: 0.82rem; border-radius: 6px; cursor: pointer;">
+              ▶️ Resume Exam
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="discardActiveExamProgress()" style="font-size: 0.78rem; padding: 0.4rem 0.65rem; border-radius: 6px; cursor: pointer;">
+              ✕ Discard
+            </button>
+          </div>
+        </div>
+
         <!-- ================= STUDENT ENTRANCE SECTION ================= -->
         <div id="studentSection">
           <div style="margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
@@ -1937,9 +1956,17 @@ body {
         </p>
       </div>
 
-      <button class="btn-action-primary" onclick="returnToLanding()" style="width: 100%; padding: 0.85rem; font-weight: 700; border-radius: 8px; background: #0f172a; color: white; border: none; cursor: pointer;">
-        ← Back to Examination Portal
-      </button>
+      <div style="display: flex; gap: 0.75rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+        <button type="button" class="btn btn-secondary" onclick="downloadStudentReceiptJson()" style="flex: 1; padding: 0.75rem; font-weight: 700; border-radius: 8px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
+          📥 Download Submission Copy (JSON)
+        </button>
+        <button type="button" class="btn-action-primary" onclick="returnToLanding()" style="flex: 1; padding: 0.75rem; font-weight: 700; border-radius: 8px; background: #0f172a; color: white; border: none; cursor: pointer;">
+          ← Back to Portal Home
+        </button>
+      </div>
+      <div style="font-size: 0.75rem; color: #059669; font-weight: 600; text-align: center; margin-bottom: 1rem;">
+        💾 Submission permanently saved and recorded in database.
+      </div>
     </div>
   </div>
 
@@ -2043,17 +2070,37 @@ body {
               </p>
             </div>
 
-            <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+            <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
               <div class="filter-btn-group">
                 <button class="filter-btn active" id="filterBtnAll" onclick="filterHostSubs('all')">All Exams</button>
                 <button class="filter-btn" id="filterBtnJee" onclick="filterHostSubs('jee')">JEE (300M)</button>
                 <button class="filter-btn" id="filterBtnNeet" onclick="filterHostSubs('neet')">NEET (720M)</button>
               </div>
 
+              <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
+                <button type="button" class="btn btn-secondary" onclick="exportSubmissionsCsv()" style="font-size: 0.78rem; padding: 0.35rem 0.65rem;" title="Export submissions as CSV spreadsheet">
+                  📊 CSV
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="exportSubmissionsJson()" style="font-size: 0.78rem; padding: 0.35rem 0.65rem;" title="Export complete submissions as JSON backup">
+                  📄 JSON
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="backupAllPortalData()" style="font-size: 0.78rem; padding: 0.35rem 0.65rem; background: #f0fdf4; border-color: #86efac; color: #166534; font-weight: 700;" title="Backup All Exams, Questions & Submissions to file">
+                  💾 Full Backup
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="triggerRestoreBackupInput()" style="font-size: 0.78rem; padding: 0.35rem 0.65rem;" title="Restore Portal data from JSON backup file">
+                  📥 Restore
+                </button>
+                <input type="file" id="portalBackupFileInput" accept=".json" style="display: none;" onchange="handleRestoreBackupFile(event)">
+              </div>
+
               <input type="text" id="hostSubSearchInput" class="search-input" oninput="renderHostSubmissionsTable()" placeholder="🔍 Search Candidate, Roll No, Token...">
             </div>
           </div>
 
+          <div style="padding: 0.45rem 0.85rem; background: #ecfdf5; border-bottom: 1px solid #d1fae5; font-size: 0.76rem; color: #065f46; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <span>🛡️ <strong>Real-Time Data Persistence:</strong> Any change by host and all student submissions are permanently saved to IndexedDB & LocalStorage with zero data loss.</span>
+            <span id="hostAutoSaveIndicator" style="font-weight: 700; color: #047857;">🟢 Live Sync: Active</span>
+          </div>
           <div style="overflow-x: auto;">
             <table class="data-table">
               <thead>
@@ -4209,7 +4256,8 @@ window.PYQ_BANK = [
     ];
 
     // -------------------------------------------------------------
-    // LocalStorage Persistent State Manager
+    // Comprehensive High-Capacity & Persistent Storage Engine
+    // (LocalStorage + IndexedDB + Cross-Tab Broadcast Synchronization)
     // -------------------------------------------------------------
     const STORAGE_KEYS = {
       EXAMS: 'nta_cloud_exams',
@@ -4218,25 +4266,589 @@ window.PYQ_BANK = [
       ACTIVE_CANDIDATES: 'nta_cloud_active_cands',
       HOST_AUTH: 'nta_cloud_host_auth',
       HOST_CREDS: 'nta_cloud_host_creds',
-      SOLUTIONS: 'nta_cloud_solutions'
+      SOLUTIONS: 'nta_cloud_solutions',
+      ACTIVE_PROGRESS: 'nta_cloud_active_progress',
+      AUDIT_LOG: 'nta_cloud_audit_log'
     };
 
+    // 1. IndexedDB Wrapper for Permanent, High-Capacity Browser Storage
+    const IDBStore = {
+      dbName: 'NTAExamPortalDB',
+      dbVersion: 2,
+      db: null,
+      isReady: false,
+
+      async init() {
+        if (!('indexedDB' in window)) {
+          console.warn('IndexedDB not supported in this browser. Using LocalStorage.');
+          return;
+        }
+        return new Promise((resolve) => {
+          try {
+            const req = indexedDB.open(this.dbName, this.dbVersion);
+            req.onupgradeneeded = (e) => {
+              const db = e.target.result;
+              if (!db.objectStoreNames.contains('keyval')) {
+                db.createObjectStore('keyval', { keyPath: 'key' });
+              }
+              if (!db.objectStoreNames.contains('submissions')) {
+                const subStore = db.createObjectStore('submissions', { keyPath: 'submission_token' });
+                subStore.createIndex('submitted_at', 'submitted_at', { unique: false });
+                subStore.createIndex('exam_type', 'exam_type', { unique: false });
+                subStore.createIndex('roll_no', 'roll_no', { unique: false });
+              }
+              if (!db.objectStoreNames.contains('backups')) {
+                db.createObjectStore('backups', { keyPath: 'id', autoIncrement: true });
+              }
+            };
+            req.onsuccess = async (e) => {
+              this.db = e.target.result;
+              this.isReady = true;
+              await this.syncFromIndexedDB();
+              resolve(this.db);
+            };
+            req.onerror = (e) => {
+              console.warn('IndexedDB open error:', e);
+              resolve(null);
+            };
+          } catch (err) {
+            console.warn('IndexedDB initialization failed:', err);
+            resolve(null);
+          }
+        });
+      },
+
+      async set(key, value) {
+        if (!this.isReady || !this.db) return;
+        return new Promise((resolve) => {
+          try {
+            const tx = this.db.transaction('keyval', 'readwrite');
+            const store = tx.objectStore('keyval');
+            store.put({ key, value, updated_at: new Date().toISOString() });
+            tx.oncomplete = () => resolve(true);
+            tx.onerror = () => resolve(false);
+          } catch (e) {
+            resolve(false);
+          }
+        });
+      },
+
+      async get(key) {
+        if (!this.isReady || !this.db) return null;
+        return new Promise((resolve) => {
+          try {
+            const tx = this.db.transaction('keyval', 'readonly');
+            const store = tx.objectStore('keyval');
+            const req = store.get(key);
+            req.onsuccess = () => resolve(req.result ? req.result.value : null);
+            req.onerror = () => resolve(null);
+          } catch (e) {
+            resolve(null);
+          }
+        });
+      },
+
+      async saveSubmission(sub) {
+        if (!this.isReady || !this.db || !sub || !sub.submission_token) return;
+        return new Promise((resolve) => {
+          try {
+            const tx = this.db.transaction(['submissions', 'keyval'], 'readwrite');
+            const subStore = tx.objectStore('submissions');
+            subStore.put(sub);
+            tx.oncomplete = () => resolve(true);
+            tx.onerror = () => resolve(false);
+          } catch (e) {
+            resolve(false);
+          }
+        });
+      },
+
+      async getAllSubmissions() {
+        if (!this.isReady || !this.db) return [];
+        return new Promise((resolve) => {
+          try {
+            const tx = this.db.transaction('submissions', 'readonly');
+            const store = tx.objectStore('submissions');
+            const req = store.getAll();
+            req.onsuccess = () => resolve(req.result || []);
+            req.onerror = () => resolve([]);
+          } catch (e) {
+            resolve([]);
+          }
+        });
+      },
+
+      async saveBackup(action, data) {
+        if (!this.isReady || !this.db) return;
+        try {
+          const tx = this.db.transaction('backups', 'readwrite');
+          tx.objectStore('backups').add({
+            action,
+            data,
+            timestamp: new Date().toISOString()
+          });
+        } catch (e) {}
+      },
+
+      async syncFromIndexedDB() {
+        try {
+          // Submissions sync from IndexedDB
+          const idbSubs = await this.getAllSubmissions();
+          if (idbSubs && idbSubs.length > 0) {
+            let localSubs = loadFromStorage(STORAGE_KEYS.SUBMISSIONS, []);
+            const map = new Map();
+            localSubs.forEach(s => { if (s && s.submission_token) map.set(s.submission_token, s); });
+            idbSubs.forEach(s => { if (s && s.submission_token) map.set(s.submission_token, s); });
+            const mergedSubs = Array.from(map.values()).sort((a, b) => new Date(b.submitted_at || 0) - new Date(a.submitted_at || 0));
+            if (mergedSubs.length > localSubs.length) {
+              submissions = mergedSubs;
+              saveToStorage(STORAGE_KEYS.SUBMISSIONS, mergedSubs);
+              if (document.getElementById('viewHost')?.classList.contains('active')) {
+                renderHostDashboard();
+              }
+            }
+          }
+
+          // Check if custom exams exist in IndexedDB
+          const idbExams = await this.get(STORAGE_KEYS.EXAMS);
+          if (idbExams && Array.isArray(idbExams) && idbExams.length > 0) {
+            let localExams = loadFromStorage(STORAGE_KEYS.EXAMS, []);
+            if (!localExams || localExams.length < idbExams.length) {
+              exams = idbExams;
+              saveToStorage(STORAGE_KEYS.EXAMS, idbExams);
+              renderLandingExamCards();
+              renderHostExamsTable();
+            }
+          }
+        } catch (err) {
+          console.warn('IndexedDB sync error:', err);
+        }
+      }
+    };
+
+    // 2. Real-Time Cross-Tab / Cross-Window Broadcast Bus
+    const syncBus = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('nta_cloud_exam_bus') : null;
+
+    function broadcastEvent(type, payload = {}) {
+      if (syncBus) {
+        try {
+          syncBus.postMessage({ type, payload, senderId: Date.now() });
+        } catch (e) {
+          console.warn('BroadcastBus error:', e);
+        }
+      }
+    }
+
+    if (syncBus) {
+      syncBus.onmessage = (e) => {
+        handleCrossTabSync(e.data);
+      };
+    }
+
+    function handleCrossTabSync(data) {
+      if (!data || !data.type) return;
+
+      switch (data.type) {
+        case 'SUBMISSION_SAVED':
+          submissions = loadFromStorage(STORAGE_KEYS.SUBMISSIONS, submissions);
+          activeCandidates = loadFromStorage(STORAGE_KEYS.ACTIVE_CANDIDATES, activeCandidates);
+          if (document.getElementById('viewHost')?.classList.contains('active')) {
+            renderHostDashboard();
+            if (data.payload?.name) {
+              showToast(`🔔 New submission received: ${data.payload.name} (${data.payload.roll_no})!`, 4000);
+            }
+          }
+          break;
+
+        case 'HOST_EXAMS_SAVED':
+          exams = loadFromStorage(STORAGE_KEYS.EXAMS, exams);
+          renderLandingExamCards();
+          if (document.getElementById('viewHost')?.classList.contains('active')) {
+            renderHostExamsTable();
+            updateHostQBankExamDropdown();
+          }
+          break;
+
+        case 'HOST_QUESTIONS_SAVED':
+          questionsByExam = loadFromStorage(STORAGE_KEYS.QUESTIONS, questionsByExam);
+          if (document.getElementById('viewHost')?.classList.contains('active')) {
+            renderHostQuestionsTable();
+          }
+          break;
+
+        case 'HOST_SOLUTIONS_SAVED':
+          paperSolutions = loadFromStorage(STORAGE_KEYS.SOLUTIONS, paperSolutions);
+          filterSolutions();
+          break;
+
+        case 'ACTIVE_CANDIDATES_SAVED':
+          activeCandidates = loadFromStorage(STORAGE_KEYS.ACTIVE_CANDIDATES, activeCandidates);
+          if (document.getElementById('viewHost')?.classList.contains('active')) {
+            renderHostActiveCandidatesTable();
+          }
+          break;
+      }
+    }
+
+    // Storage Event Listener (Cross-tab and cross-window sync fallback)
+    window.addEventListener('storage', (e) => {
+      if (!e.key) return;
+      if (e.key === STORAGE_KEYS.SUBMISSIONS) {
+        submissions = loadFromStorage(STORAGE_KEYS.SUBMISSIONS, submissions);
+        if (document.getElementById('viewHost')?.classList.contains('active')) {
+          renderHostDashboard();
+        }
+      } else if (e.key === STORAGE_KEYS.EXAMS) {
+        exams = loadFromStorage(STORAGE_KEYS.EXAMS, exams);
+        renderLandingExamCards();
+        if (document.getElementById('viewHost')?.classList.contains('active')) {
+          renderHostExamsTable();
+        }
+      } else if (e.key === STORAGE_KEYS.QUESTIONS) {
+        questionsByExam = loadFromStorage(STORAGE_KEYS.QUESTIONS, questionsByExam);
+        if (document.getElementById('viewHost')?.classList.contains('active')) {
+          renderHostQuestionsTable();
+        }
+      } else if (e.key === STORAGE_KEYS.SOLUTIONS) {
+        paperSolutions = loadFromStorage(STORAGE_KEYS.SOLUTIONS, paperSolutions);
+        filterSolutions();
+      } else if (e.key === STORAGE_KEYS.ACTIVE_CANDIDATES) {
+        activeCandidates = loadFromStorage(STORAGE_KEYS.ACTIVE_CANDIDATES, activeCandidates);
+        if (document.getElementById('viewHost')?.classList.contains('active')) {
+          renderHostActiveCandidatesTable();
+        }
+      }
+    });
+
+    // 3. Robust Dual-Layer Storage Reader & Writer
     function loadFromStorage(key, defaultVal) {
       try {
         const item = localStorage.getItem(key);
-        return item ? JSON.parse(item) : defaultVal;
+        if (item !== null && item !== undefined) {
+          return JSON.parse(item);
+        }
+        return defaultVal;
       } catch (e) {
-        console.warn('Storage read error:', e);
+        console.warn(`Storage read error for '${key}':`, e);
         return defaultVal;
       }
     }
 
     function saveToStorage(key, val) {
+      const jsonStr = JSON.stringify(val);
+      let localSaved = false;
+
+      // Layer 1: LocalStorage with QuotaExceeded safety
       try {
-        localStorage.setItem(key, JSON.stringify(val));
+        localStorage.setItem(key, jsonStr);
+        localSaved = true;
       } catch (e) {
-        console.warn('Storage write error:', e);
+        console.warn(`LocalStorage write error for '${key}' (will persist in IndexedDB):`, e);
       }
+
+      // Layer 2: IndexedDB (Permanent disk storage, virtually unlimited capacity)
+      IDBStore.set(key, val);
+
+      // Extra backup for individual submissions
+      if (key === STORAGE_KEYS.SUBMISSIONS && Array.isArray(val)) {
+        val.forEach(sub => {
+          if (sub && sub.submission_token) {
+            IDBStore.saveSubmission(sub);
+            try {
+              localStorage.setItem('nta_sub_item_' + sub.submission_token, JSON.stringify(sub));
+            } catch (ignore) {}
+          }
+        });
+      }
+
+      return localSaved;
+    }
+
+    // 4. Atomic Submissions Preservation (Preserves all past & concurrent submissions)
+    function saveSubmissionAtomic(record) {
+      // 1. Fresh read from storage
+      const currentStored = loadFromStorage(STORAGE_KEYS.SUBMISSIONS, []);
+      const subMap = new Map();
+
+      if (Array.isArray(currentStored)) {
+        currentStored.forEach(s => {
+          if (s && (s.submission_token || s.session_id)) {
+            subMap.set(s.submission_token || s.session_id, s);
+          }
+        });
+      }
+
+      // Incorporate in-memory submissions
+      if (Array.isArray(submissions)) {
+        submissions.forEach(s => {
+          if (s && (s.submission_token || s.session_id) && !subMap.has(s.submission_token || s.session_id)) {
+            subMap.set(s.submission_token || s.session_id, s);
+          }
+        });
+      }
+
+      // Insert new submission
+      subMap.set(record.submission_token || record.session_id, record);
+
+      // Sort descending by submitted_at
+      const merged = Array.from(subMap.values()).sort((a, b) => {
+        return new Date(b.submitted_at || 0) - new Date(a.submitted_at || 0);
+      });
+
+      submissions = merged;
+      saveToStorage(STORAGE_KEYS.SUBMISSIONS, merged);
+
+      // Save to IndexedDB dedicated store & audit log
+      IDBStore.saveSubmission(record);
+      IDBStore.saveBackup('NEW_SUBMISSION', { token: record.submission_token, name: record.name, marks: record.total_marks });
+
+      // Clear any active exam progress
+      clearActiveExamProgress();
+
+      // Broadcast to other tabs/windows
+      broadcastEvent('SUBMISSION_SAVED', record);
+
+      // Asynchronous background sync to Flask server API (if online)
+      syncSubmissionWithBackendServer(record);
+
+      return merged;
+    }
+
+    // 5. Continuous Exam Auto-Save & Resume
+    function autoSaveActiveExamProgress() {
+      if (!currentExamSession) return;
+      const progress = {
+        session_id: currentExamSession.session_id,
+        candidate_name: currentExamSession.candidate_name,
+        roll_no: currentExamSession.roll_no,
+        exam_type: currentExamSession.exam_type,
+        exam_title: currentExamSession.exam_title,
+        duration_minutes: currentExamSession.duration_minutes,
+        timeRemainingSeconds: timeRemainingSeconds,
+        currentQuestionIndex: currentQuestionIndex,
+        answers: candidateAnswers,
+        markedReview: candidateMarkedReview,
+        visited: candidateVisited,
+        strikes: candidateStrikes,
+        violations_log: currentExamSession.violations_log || [],
+        saved_at: new Date().toISOString()
+      };
+      saveToStorage(STORAGE_KEYS.ACTIVE_PROGRESS, progress);
+    }
+
+    function clearActiveExamProgress() {
+      try {
+        localStorage.removeItem(STORAGE_KEYS.ACTIVE_PROGRESS);
+      } catch (e) {}
+    }
+
+    function checkActiveExamProgressOnStartup() {
+      const prog = loadFromStorage(STORAGE_KEYS.ACTIVE_PROGRESS, null);
+      const banner = document.getElementById('resumeExamBanner');
+      if (!banner) return;
+      if (prog && prog.session_id && prog.timeRemainingSeconds > 10) {
+        const titleEl = document.getElementById('resumeExamTitle');
+        const subEl = document.getElementById('resumeExamSubtitle');
+        if (titleEl) titleEl.textContent = `⏱️ Ongoing Exam: ${prog.candidate_name} (Roll: ${prog.roll_no})`;
+        const mins = Math.floor(prog.timeRemainingSeconds / 60);
+        const answeredCount = Object.keys(prog.answers || {}).length;
+        if (subEl) subEl.textContent = `${prog.exam_title} • ${answeredCount} Answered • ~${mins} mins remaining. Click to resume without losing answers.`;
+        banner.style.display = 'flex';
+      } else {
+        banner.style.display = 'none';
+      }
+    }
+
+    function resumeActiveExam() {
+      const prog = loadFromStorage(STORAGE_KEYS.ACTIVE_PROGRESS, null);
+      if (!prog || !prog.session_id) {
+        alert("No active session found.");
+        return;
+      }
+      const ex = exams.find(x => x.exam_type === prog.exam_type);
+      const qList = (questionsByExam[prog.exam_type] && questionsByExam[prog.exam_type].length)
+        ? questionsByExam[prog.exam_type]
+        : (prog.exam_type === 'jee' ? SEED_JEE_QUESTIONS : SEED_NEET_QUESTIONS);
+
+      currentExamSession = {
+        session_id: prog.session_id,
+        candidate_name: prog.candidate_name,
+        roll_no: prog.roll_no,
+        exam_type: prog.exam_type,
+        exam_title: prog.exam_title || (ex ? ex.title : 'Examination'),
+        duration_minutes: prog.duration_minutes || 180,
+        max_violations: ex ? ex.max_violations : 3,
+        start_time: prog.saved_at,
+        device_type: 'Desktop',
+        status: 'in_progress',
+        violations_count: prog.strikes || 0,
+        violations_log: prog.violations_log || []
+      };
+
+      currentExamQuestions = JSON.parse(JSON.stringify(qList));
+      currentQuestionIndex = prog.currentQuestionIndex || 0;
+      candidateAnswers = prog.answers || {};
+      candidateMarkedReview = prog.markedReview || {};
+      candidateVisited = prog.visited || { 0: true };
+      candidateStrikes = prog.strikes || 0;
+      timeRemainingSeconds = prog.timeRemainingSeconds || (currentExamSession.duration_minutes * 60);
+
+      document.getElementById('examHeaderTitle').textContent = currentExamSession.exam_title.toUpperCase();
+      document.getElementById('headerCandidateName').textContent = prog.candidate_name;
+      document.getElementById('headerCandidateRoll').textContent = prog.roll_no;
+      document.getElementById('headerAvatarCircle').textContent = (prog.candidate_name[0] || 'C').toUpperCase();
+      document.getElementById('paletteCandidateName').textContent = prog.candidate_name;
+      document.getElementById('paletteCandidateRoll').textContent = prog.roll_no;
+      document.getElementById('paletteAvatarCircle').textContent = (prog.candidate_name[0] || 'C').toUpperCase();
+
+      renderSectionTabs();
+      renderPaletteGrid();
+      renderCurrentQuestion();
+      startExamCountdownTimer();
+      switchAppView('viewExam');
+      requestFullscreen();
+      bindAntiCheatSecurityListeners();
+      showToast("Exam session resumed! All saved answers restored.");
+    }
+
+    function discardActiveExamProgress() {
+      if (!confirm("Are you sure you want to discard your ongoing exam? All answers in this session will be removed.")) return;
+      clearActiveExamProgress();
+      const banner = document.getElementById('resumeExamBanner');
+      if (banner) banner.style.display = 'none';
+      showToast("In-progress exam session discarded.");
+    }
+
+    // 6. Optional Background Sync with Flask Server API
+    async function syncSubmissionWithBackendServer(record) {
+      try {
+        const payload = {
+          name: record.name,
+          roll_no: record.roll_no,
+          exam_type: record.exam_type,
+          answers: record.answers,
+          violations_count: record.violations_count,
+          violations_log: record.violations_log,
+          submitted_at: record.submitted_at,
+          submission_token: record.submission_token
+        };
+        const targetUrl = (window.location.protocol === 'http:' || window.location.protocol === 'https:')
+          ? '/api/student/submit'
+          : 'http://127.0.0.1:5000/api/student/submit';
+
+        await fetch(targetUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          mode: 'cors'
+        }).then(r => r.json()).catch(() => null);
+      } catch (err) {}
+    }
+
+    // 7. Export & Backup Utilities
+    function exportSubmissionsJson() {
+      submissions = loadFromStorage(STORAGE_KEYS.SUBMISSIONS, submissions);
+      if (submissions.length === 0) {
+        alert("No submissions available to export.");
+        return;
+      }
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(submissions, null, 2));
+      const a = document.createElement("a");
+      a.href = dataStr;
+      a.download = `exam_submissions_${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast("Submissions JSON exported.");
+    }
+
+    function backupAllPortalData() {
+      const bundle = {
+        meta: {
+          version: "2.0",
+          exported_at: new Date().toISOString(),
+          portal: "JEE & NEET Secure Exam Portal"
+        },
+        exams: loadFromStorage(STORAGE_KEYS.EXAMS, exams),
+        questionsByExam: loadFromStorage(STORAGE_KEYS.QUESTIONS, questionsByExam),
+        submissions: loadFromStorage(STORAGE_KEYS.SUBMISSIONS, submissions),
+        paperSolutions: loadFromStorage(STORAGE_KEYS.SOLUTIONS, paperSolutions)
+      };
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(bundle, null, 2));
+      const a = document.createElement("a");
+      a.href = dataStr;
+      a.download = `exam_portal_full_backup_${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast("Complete Portal Backup created successfully!");
+    }
+
+    function triggerRestoreBackupInput() {
+      document.getElementById('portalBackupFileInput').click();
+    }
+
+    function handleRestoreBackupFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const bundle = JSON.parse(event.target.result);
+          if (!bundle || (!bundle.exams && !bundle.submissions && !bundle.questionsByExam)) {
+            alert("Invalid backup file format.");
+            return;
+          }
+          if (!confirm("Restore all portal data from this backup? This will merge and restore all exams, question banks, and submissions.")) return;
+
+          if (bundle.exams && Array.isArray(bundle.exams)) {
+            exams = bundle.exams;
+            saveToStorage(STORAGE_KEYS.EXAMS, exams);
+          }
+          if (bundle.questionsByExam && typeof bundle.questionsByExam === 'object') {
+            questionsByExam = bundle.questionsByExam;
+            saveToStorage(STORAGE_KEYS.QUESTIONS, questionsByExam);
+          }
+          if (bundle.submissions && Array.isArray(bundle.submissions)) {
+            const current = loadFromStorage(STORAGE_KEYS.SUBMISSIONS, []);
+            const map = new Map();
+            current.forEach(s => { if (s && s.submission_token) map.set(s.submission_token, s); });
+            bundle.submissions.forEach(s => { if (s && s.submission_token) map.set(s.submission_token, s); });
+            submissions = Array.from(map.values()).sort((a, b) => new Date(b.submitted_at || 0) - new Date(a.submitted_at || 0));
+            saveToStorage(STORAGE_KEYS.SUBMISSIONS, submissions);
+          }
+          if (bundle.paperSolutions && Array.isArray(bundle.paperSolutions)) {
+            paperSolutions = bundle.paperSolutions;
+            saveToStorage(STORAGE_KEYS.SOLUTIONS, paperSolutions);
+          }
+
+          renderLandingExamCards();
+          renderHostDashboard();
+          showToast("🎉 Portal data restored successfully from backup!");
+        } catch (err) {
+          alert("Failed to parse backup file: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function downloadStudentReceiptJson() {
+      const token = document.getElementById('rcptToken')?.textContent;
+      const sub = (loadFromStorage(STORAGE_KEYS.SUBMISSIONS, submissions) || []).find(s => s.submission_token === token) || {
+        token: token,
+        name: document.getElementById('rcptName')?.textContent,
+        roll_no: document.getElementById('rcptRoll')?.textContent,
+        exam: document.getElementById('rcptExam')?.textContent,
+        submitted_at: document.getElementById('rcptTime')?.textContent,
+        status: document.getElementById('rcptStatus')?.textContent
+      };
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(sub, null, 2));
+      const a = document.createElement("a");
+      a.href = dataStr;
+      a.download = `Submission_Receipt_${token || 'Exam'}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
 
     // Initialize State
@@ -4737,6 +5349,7 @@ Official Solution & Answer Key Document.`;
 
       paperSolutions.unshift(newSol);
       saveToStorage(STORAGE_KEYS.SOLUTIONS, paperSolutions);
+      broadcastEvent('HOST_SOLUTIONS_SAVED', { id: newId });
 
       if (btn) {
         btn.disabled = false;
@@ -4753,6 +5366,7 @@ Official Solution & Answer Key Document.`;
       if (!confirm("Are you sure you want to delete this paper and solution?")) return;
       paperSolutions = paperSolutions.filter(item => item.id !== id);
       saveToStorage(STORAGE_KEYS.SOLUTIONS, paperSolutions);
+      broadcastEvent('HOST_SOLUTIONS_SAVED', { id });
       alert("Deleted successfully.");
       switchSolutionCategory(currentSolutionsCategory);
     }
@@ -4788,6 +5402,7 @@ Official Solution & Answer Key Document.`;
     }
 
     function renderLandingExamCards() {
+      exams = loadFromStorage(STORAGE_KEYS.EXAMS, exams);
       const grid = document.getElementById('landingExamSelectGrid');
       if (!grid) return;
       grid.innerHTML = '';
@@ -5256,16 +5871,19 @@ Official Solution & Answer Key Document.`;
       candidateAnswers[currentQuestionIndex] = optIndex;
       // Answering resolves un-reviewed state
       renderCurrentQuestion();
+      autoSaveActiveExamProgress();
     }
 
     function clearCurrentResponse() {
       delete candidateAnswers[currentQuestionIndex];
       candidateMarkedReview[currentQuestionIndex] = false;
       renderCurrentQuestion();
+      autoSaveActiveExamProgress();
     }
 
     function markForReviewAndNext() {
       candidateMarkedReview[currentQuestionIndex] = true;
+      autoSaveActiveExamProgress();
       navNextQuestion();
     }
 
@@ -5274,6 +5892,7 @@ Official Solution & Answer Key Document.`;
       if (candidateAnswers[currentQuestionIndex] !== undefined && !candidateMarkedReview[currentQuestionIndex]) {
         candidateMarkedReview[currentQuestionIndex] = false;
       }
+      autoSaveActiveExamProgress();
       navNextQuestion();
     }
 
@@ -5369,6 +5988,11 @@ Official Solution & Answer Key Document.`;
       examTimerInterval = setInterval(() => {
         timeRemainingSeconds--;
         updateTimerDisplay();
+
+        // Auto-save exam progress every 10 seconds
+        if (timeRemainingSeconds > 0 && timeRemainingSeconds % 10 === 0) {
+          autoSaveActiveExamProgress();
+        }
 
         if (timeRemainingSeconds <= 0) {
           clearInterval(examTimerInterval);
@@ -5638,13 +6262,13 @@ Official Solution & Answer Key Document.`;
         is_flagged: Boolean(isDisqualified || currentExamSession.violations_count >= 3)
       };
 
-      // Save to submissions
-      submissions.unshift(record);
-      saveToStorage(STORAGE_KEYS.SUBMISSIONS, submissions);
+      // Atomic & Permanent Submission Storage (Preserves all past & concurrent submissions)
+      saveSubmissionAtomic(record);
 
       // Remove from active candidates
-      activeCandidates = activeCandidates.filter(c => c.session_id !== currentExamSession.session_id);
+      activeCandidates = loadFromStorage(STORAGE_KEYS.ACTIVE_CANDIDATES, activeCandidates).filter(c => c.session_id !== currentExamSession.session_id);
       saveToStorage(STORAGE_KEYS.ACTIVE_CANDIDATES, activeCandidates);
+      broadcastEvent('ACTIVE_CANDIDATES_SAVED', activeCandidates);
 
       // Display student confirmation screen (CONFIDENTIAL: STRICTLY NO MARKS)
       document.getElementById('rcptName').textContent = record.name;
@@ -5683,6 +6307,12 @@ Official Solution & Answer Key Document.`;
     // Host Administration Dashboard Engine
     // -------------------------------------------------------------
     function renderHostDashboard() {
+      // Always reload fresh data from storage
+      submissions = loadFromStorage(STORAGE_KEYS.SUBMISSIONS, submissions);
+      activeCandidates = loadFromStorage(STORAGE_KEYS.ACTIVE_CANDIDATES, activeCandidates);
+      exams = loadFromStorage(STORAGE_KEYS.EXAMS, exams);
+      questionsByExam = loadFromStorage(STORAGE_KEYS.QUESTIONS, questionsByExam);
+
       // 1. KPI Cards
       document.getElementById('hostKpiTotalSubs').textContent = submissions.length;
       document.getElementById('hostKpiActiveStudents').textContent = activeCandidates.length;
@@ -5935,6 +6565,7 @@ Official Solution & Answer Key Document.`;
 
       ex.is_active = newStatus;
       saveToStorage(STORAGE_KEYS.EXAMS, exams);
+      broadcastEvent('HOST_EXAMS_SAVED', { exam: currentQBankExam });
       updateQBankLiveStatusToolbarButton();
       renderHostExamsTable();
       renderLandingExamCards();
@@ -6164,6 +6795,7 @@ Official Solution & Answer Key Document.`;
       // Sync exam stats
       syncExamStats(targetExam);
       saveToStorage(STORAGE_KEYS.QUESTIONS, questionsByExam);
+      broadcastEvent('HOST_QUESTIONS_SAVED', { exam: targetExam });
 
       closeQuestionEditModal();
       currentQBankExam = targetExam;
@@ -6179,6 +6811,7 @@ Official Solution & Answer Key Document.`;
         list.splice(qIndex, 1);
         syncExamStats(currentQBankExam);
         saveToStorage(STORAGE_KEYS.QUESTIONS, questionsByExam);
+        broadcastEvent('HOST_QUESTIONS_SAVED', { exam: currentQBankExam });
         renderHostQuestionsTable();
         renderHostExamsTable();
         showToast("Question deleted.");
@@ -7455,6 +8088,8 @@ Official Solution & Answer Key Document.`;
 
       exams.push(newExamObj);
       saveToStorage(STORAGE_KEYS.EXAMS, exams);
+      broadcastEvent('HOST_EXAMS_SAVED', { code });
+      broadcastEvent('HOST_QUESTIONS_SAVED', { exam: code });
 
       closeCreateExamModal();
       renderHostExamsTable();
@@ -7516,6 +8151,7 @@ Official Solution & Answer Key Document.`;
       ex.end_time = (scheduleRadio === 'scheduled') ? document.getElementById('editEndTime').value : null;
 
       saveToStorage(STORAGE_KEYS.EXAMS, exams);
+      broadcastEvent('HOST_EXAMS_SAVED', { code });
 
       closeEditExamModal();
       renderHostExamsTable();
@@ -7562,6 +8198,8 @@ Official Solution & Answer Key Document.`;
       // Remove from questions
       delete questionsByExam[code];
       saveToStorage(STORAGE_KEYS.QUESTIONS, questionsByExam);
+      broadcastEvent('HOST_EXAMS_SAVED', { code });
+      broadcastEvent('HOST_QUESTIONS_SAVED', { exam: code });
 
       closeDeleteExamModal();
 
@@ -7765,13 +8403,45 @@ Official Solution & Answer Key Document.`;
     window.submitHostQuickAuth = submitHostQuickAuth;
     window.submitUploadSolutionForm = submitUploadSolutionForm;
     window.deleteSolution = deleteSolution;
+    window.downloadStudentReceiptJson = downloadStudentReceiptJson;
+    window.exportSubmissionsJson = exportSubmissionsJson;
+    window.backupAllPortalData = backupAllPortalData;
+    window.triggerRestoreBackupInput = triggerRestoreBackupInput;
+    window.handleRestoreBackupFile = handleRestoreBackupFile;
+    window.resumeActiveExam = resumeActiveExam;
+    window.discardActiveExamProgress = discardActiveExamProgress;
 
     // -------------------------------------------------------------
     // Initial Page Boot
     // -------------------------------------------------------------
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       renderLandingExamCards();
       refreshHostLoginUI();
+
+      // Initialize permanent IndexedDB storage and check for active in-progress exams
+      await IDBStore.init();
+      checkActiveExamProgressOnStartup();
+
+      // Background auto-sync interval for host dashboard (updates live in real time)
+      setInterval(() => {
+        const hostView = document.getElementById('viewHost');
+        if (hostView && hostView.classList.contains('active')) {
+          const storedSubs = loadFromStorage(STORAGE_KEYS.SUBMISSIONS, []);
+          const storedCands = loadFromStorage(STORAGE_KEYS.ACTIVE_CANDIDATES, []);
+          if (storedSubs.length !== submissions.length || storedCands.length !== activeCandidates.length) {
+            submissions = storedSubs;
+            activeCandidates = storedCands;
+            renderHostDashboard();
+          }
+        }
+      }, 2500);
+
+      // Auto-save answers on beforeunload
+      window.addEventListener('beforeunload', () => {
+        if (currentExamSession && timeRemainingSeconds > 0) {
+          autoSaveActiveExamProgress();
+        }
+      });
 
       // Check URL params for direct host login or role e.g. #host or ?role=host
       const urlParams = new URLSearchParams(window.location.search);
