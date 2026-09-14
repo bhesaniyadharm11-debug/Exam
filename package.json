@@ -1,0 +1,24 @@
+{
+  "name": "exam",
+  "version": "1.0.0",
+  "description": "A secure, full-stack online examination portal modeled after India's national competitive examinations (JEE Main & NEET-UG). It features a robust anti-cheating lockdown system, host-exclusive confidential scoring, and a fully responsive interface tailored for mobile phones, tablets, laptops, and desktop computers.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bhesaniyadharm11-debug/jee-neet-exam-portal.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/bhesaniyadharm11-debug/jee-neet-exam-portal/issues"
+  },
+  "homepage": "https://github.com/bhesaniyadharm11-debug/jee-neet-exam-portal#readme",
+  "dependencies": {
+    "@vercel/postgres": "^0.10.0"
+  }
+}

@@ -1688,6 +1688,11 @@ body {
               <input type="text" id="candRollInput" class="form-control" placeholder="e.g. JEE2026-89421" required>
             </div>
 
+            <div class="form-group" style="margin-bottom: 1.15rem;">
+              <label class="form-label" for="candEmailInput" style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">Candidate Email Address (for Score Receipt & Postgres Sync)</label>
+              <input type="email" id="candEmailInput" class="form-control" placeholder="e.g. student@example.com">
+            </div>
+
             <!-- Security Notice Box -->
             <div class="security-notice-box" style="background: #fef2f2; border-left: 4px solid #dc2626; padding: 0.85rem 1rem; border-radius: 6px; font-size: 0.82rem; color: #991b1b; margin-bottom: 1.5rem; line-height: 1.5;">
               <strong>🔒 Anti-Cheating & Integrity Protocols:</strong>
@@ -4561,6 +4566,9 @@ window.PYQ_BANK = [
         });
       }
 
+      // Layer 3: Vercel Postgres Cloud Database Sync (when online on Vercel)
+      syncStateWithVercel(key, val);
+
       return localSaved;
     }
 
@@ -4719,30 +4727,147 @@ window.PYQ_BANK = [
       showToast("In-progress exam session discarded.");
     }
 
-    // 6. Optional Background Sync with Flask Server API
+    // 6. Background Sync with Vercel Postgres API (/api/submit & /api/submissions) & Flask Server API
     async function syncSubmissionWithBackendServer(record) {
       try {
-        const payload = {
-          name: record.name,
+        const studentEmail = record.email || (record.roll_no ? `${record.roll_no}@student.exam` : 'student@exam.portal');
+        const candidateName = record.name || record.candidate_name || 'Anonymous Candidate';
+
+        // 1. Direct payload for Vercel /api/submit (api/submit.js: name, email, message)
+        const submitPayload = {
+          name: candidateName,
+          email: studentEmail,
+          message: JSON.stringify({
+            submission_token: record.submission_token,
+            roll_no: record.roll_no,
+            exam_type: record.exam_type,
+            exam_title: record.exam_title,
+            score: record.score !== undefined ? record.score : record.total_marks,
+            total_marks: record.total_marks,
+            max_marks: record.max_marks,
+            percentage: record.percentage,
+            correct_count: record.correct_count,
+            incorrect_count: record.incorrect_count,
+            unattempted_count: record.unattempted_count,
+            subject_scores: record.subject_scores,
+            answers: record.answers,
+            violations_count: record.violations_count,
+            violations_log: record.violations_log,
+            is_flagged: record.is_flagged,
+            submitted_at: record.submitted_at
+          })
+        };
+
+        // 2. Comprehensive payload for detailed table endpoints
+        const generalPayload = {
+          name: candidateName,
+          candidate_name: candidateName,
+          email: studentEmail,
           roll_no: record.roll_no,
           exam_type: record.exam_type,
           answers: record.answers,
+          score: record.score !== undefined ? record.score : record.total_marks,
+          total_marks: record.total_marks,
           violations_count: record.violations_count,
           violations_log: record.violations_log,
           submitted_at: record.submitted_at,
           submission_token: record.submission_token
         };
-        const targetUrl = (window.location.protocol === 'http:' || window.location.protocol === 'https:')
-          ? '/api/student/submit'
-          : 'http://127.0.0.1:5000/api/student/submit';
 
-        await fetch(targetUrl, {
+        if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+          // Send to Vercel Postgres Serverless endpoint /api/submit
+          fetch('/api/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(submitPayload)
+          }).catch(() => null);
+
+          // Send to Vercel Postgres Serverless endpoint /api/submissions
+          fetch('/api/submissions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(generalPayload)
+          }).catch(() => null);
+
+          // Send to Flask server endpoint if running
+          fetch('/api/student/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(generalPayload)
+          }).catch(() => null);
+        } else {
+          fetch('http://127.0.0.1:5000/api/student/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(generalPayload),
+            mode: 'cors'
+          }).catch(() => null);
+        }
+      } catch (err) {}
+    }
+
+    // Sync host state (exams, questions, solutions) to Vercel Postgres
+    async function syncStateWithVercel(key, val) {
+      if (typeof window === 'undefined' || !window.location) return;
+      if (window.location.protocol !== 'http:' && window.location.protocol !== 'https:') return;
+      if (key === STORAGE_KEYS.ACTIVE_PROGRESS || key === STORAGE_KEYS.ACTIVE_CANDIDATES) return;
+      try {
+        await fetch('/api/sync', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-          mode: 'cors'
-        }).then(r => r.json()).catch(() => null);
-      } catch (err) {}
+          body: JSON.stringify({ key, data: val })
+        }).catch(() => null);
+      } catch (e) {}
+    }
+
+    // Sync latest state & submissions from Vercel Postgres on initial load
+    async function syncFromCloud() {
+      if (typeof window === 'undefined' || !window.location) return;
+      if (window.location.protocol !== 'http:' && window.location.protocol !== 'https:') return;
+      try {
+        // 1. Fetch latest student submissions
+        const subRes = await fetch('/api/submissions').then(r => r.json()).catch(() => null);
+        if (subRes && subRes.ok && Array.isArray(subRes.submissions) && subRes.submissions.length > 0) {
+          const map = new Map();
+          submissions.forEach(s => { if (s && s.submission_token) map.set(s.submission_token, s); });
+          subRes.submissions.forEach(s => { if (s && s.submission_token) map.set(s.submission_token, s); });
+          const merged = Array.from(map.values()).sort((a, b) => new Date(b.submitted_at || 0) - new Date(a.submitted_at || 0));
+          if (merged.length > submissions.length) {
+            submissions = merged;
+            localStorage.setItem(STORAGE_KEYS.SUBMISSIONS, JSON.stringify(merged));
+            IDBStore.set(STORAGE_KEYS.SUBMISSIONS, merged);
+            if (document.getElementById('viewHost')?.classList.contains('active')) {
+              renderHostDashboard();
+            }
+          }
+        }
+
+        // 2. Fetch latest exams, questions, and solutions
+        const syncRes = await fetch('/api/sync').then(r => r.json()).catch(() => null);
+        if (syncRes && syncRes.ok && syncRes.state) {
+          const st = syncRes.state;
+          if (st[STORAGE_KEYS.EXAMS] && Array.isArray(st[STORAGE_KEYS.EXAMS])) {
+            exams = st[STORAGE_KEYS.EXAMS];
+            localStorage.setItem(STORAGE_KEYS.EXAMS, JSON.stringify(exams));
+            IDBStore.set(STORAGE_KEYS.EXAMS, exams);
+            renderLandingExamCards();
+            renderHostExamsTable();
+          }
+          if (st[STORAGE_KEYS.QUESTIONS] && typeof st[STORAGE_KEYS.QUESTIONS] === 'object') {
+            questionsByExam = st[STORAGE_KEYS.QUESTIONS];
+            localStorage.setItem(STORAGE_KEYS.QUESTIONS, JSON.stringify(questionsByExam));
+            IDBStore.set(STORAGE_KEYS.QUESTIONS, questionsByExam);
+          }
+          if (st[STORAGE_KEYS.SOLUTIONS] && typeof st[STORAGE_KEYS.SOLUTIONS] === 'object') {
+            paperSolutions = st[STORAGE_KEYS.SOLUTIONS];
+            localStorage.setItem(STORAGE_KEYS.SOLUTIONS, JSON.stringify(paperSolutions));
+            IDBStore.set(STORAGE_KEYS.SOLUTIONS, paperSolutions);
+            renderSolutionsTab();
+          }
+        }
+      } catch (e) {
+        console.warn('Vercel Postgres sync check:', e);
+      }
     }
 
     // 7. Export & Backup Utilities
@@ -5542,6 +5667,8 @@ Official Solution & Answer Key Document.`;
       e.preventDefault();
       const name = document.getElementById('candNameInput').value.trim();
       const roll = document.getElementById('candRollInput').value.trim();
+      const emailInput = document.getElementById('candEmailInput');
+      const email = (emailInput && emailInput.value.trim()) ? emailInput.value.trim() : `${roll.toLowerCase().replace(/[^a-z0-9]/g, '')}@student.exam`;
 
       if (!name || !roll) {
         alert("Please enter candidate name and roll number.");
@@ -5587,6 +5714,7 @@ Official Solution & Answer Key Document.`;
         session_id: sessionId,
         candidate_name: name,
         roll_no: roll,
+        email: email,
         exam_type: examObj.exam_type,
         exam_title: examObj.title,
         total_marks: examObj.total_marks,
@@ -6245,6 +6373,7 @@ Official Solution & Answer Key Document.`;
         session_id: currentExamSession.session_id,
         name: currentExamSession.candidate_name,
         roll_no: currentExamSession.roll_no,
+        email: currentExamSession.email || `${currentExamSession.roll_no}@student.exam`,
         exam_type: currentExamSession.exam_type,
         exam_title: currentExamSession.exam_title,
         submission_token: subToken,
@@ -8421,6 +8550,8 @@ Official Solution & Answer Key Document.`;
       // Initialize permanent IndexedDB storage and check for active in-progress exams
       await IDBStore.init();
       checkActiveExamProgressOnStartup();
+      // Sync from Vercel Postgres cloud if online
+      syncFromCloud();
 
       // Background auto-sync interval for host dashboard (updates live in real time)
       setInterval(() => {
